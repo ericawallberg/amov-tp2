@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoadingServerActivity">
+
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="143dp"
+        android:layout_height="98dp"
+        app:layout_constraintBottom_toTopOf="@+id/tvserver_ip"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.672" />
+
+    <TextView
+        android:id="@+id/tvserver_ip"
+        android:layout_width="347dp"
+        android:layout_height="36dp"
+        android:layout_marginBottom="44dp"
+        android:text="Server IP Address: "
+        android:textSize="22sp"
+        app:layout_constraintBottom_toTopOf="@+id/tvwaiting_clients"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvwaiting_clients"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Waiting For Clients"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/tvclients_connected"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.94" />
+
+    <TextView
+        android:id="@+id/tvclients_connected"
+        android:layout_width="335dp"
+        android:layout_height="34dp"
+        android:layout_marginBottom="148dp"
+        android:text="Clients Connected: "
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/btsend_sms"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.578"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btcreate_team"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="36dp"
+        android:text="CREATE TEAM"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/btsend_sms"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvclients_connected"
+        app:layout_constraintVertical_bias="0.94" />
+
+    <Button
+        android:id="@+id/btsend_sms"
+        android:layout_width="282dp"
+        android:layout_height="58dp"
+        android:text="SEND IP THROUGH SMS"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.876" />
+
+    <TextView
+        android:id="@+id/tvatleast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="(at least 2 clients)"
+        app:layout_constraintBottom_toTopOf="@+id/btcreate_team"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvclients_connected"
+        app:layout_constraintVertical_bias="1.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
