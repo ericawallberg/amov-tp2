@@ -8,6 +8,7 @@ import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import android.R.*
 import android.widget.Toast
+import com.github.onikenx.networkandroid.NetUtils
 import kotlinx.android.synthetic.main.insert_ip.view.*
 
 class MainActivity : AppCompatActivity() {
@@ -16,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if(!NetUtils.verifyNetworksStatev2(this)){
+        if(!NetUtils.verifyNetworkStateV2(this)){
             Toast.makeText(this,"No network available",Toast.LENGTH_SHORT).show()
             finish()
             return
