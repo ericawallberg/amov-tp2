@@ -1,11 +1,9 @@
 package pt.isec.a2017014841.tp2
 
 import android.content.DialogInterface
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.wifi.WifiManager
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputFilter
@@ -15,27 +13,29 @@ import android.util.Patterns
 import android.view.Gravity
 import android.view.View
 import android.widget.*
-import androidx.annotation.RequiresApi
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.ViewModelProvider
 
 
 const val SERVER_MODE = 0
 const val CLIENT_MODE = 1
 class GameActivity : AppCompatActivity() {
     private var dlg: AlertDialog? = null
-
+    private val model = ViewModelProvider(this).get(GameViewModel::class.java)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_game)
 
+
        val actionBar = supportActionBar
 
         if (actionBar != null) {
-            actionBar.title = "Nome do Jogo"
+            actionBar.title = getString(R.string.GameName)
             actionBar.setDisplayHomeAsUpEnabled(true)
         }
 
-        if (Dados.gameViewModel.connectionState.value != GameViewModel.ConnectionState.CONNECTION_ESTABLISHED) {
+        if (model..value != LoadingServerViewModel.ConnectionState.CONNECTION_ESTABLISHED) {
             when (intent.getIntExtra("mode", SERVER_MODE)) {
                 SERVER_MODE -> startAsServer()
                 CLIENT_MODE -> startAsClient()
