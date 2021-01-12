@@ -44,8 +44,9 @@ class MainActivity : AppCompatActivity() {
             }
             startActivity(intent)
         }
-        else{
+        else if(mode==SERVER_MODE){
             val intent = Intent(this, LoadingServerActivity::class.java)
+            startActivity(intent)
         }
     }
 
