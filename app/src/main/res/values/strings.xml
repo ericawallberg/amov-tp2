@@ -5,29 +5,9 @@
     <string name="server_mode">Server mode</string>
     <string name="client_mode">Client mode</string>
     <string name="ask_ip">Server IP address:</string>
-    <string name="msgsend_sms">Send SMS</string>
-    <string name="phone_no">Insert Phone Number: </string>
     <string name="send_sms">SEND</string>
     <string name="button_connect">Connect</string>
     <string name="error_address">Address not recognized</string>
     <string name="button_cancel">Cancel</string>
     <string name="GameName">Nome do Jogo</string>
-    <string name="noNetwork">No network available</string>
-    <string name="clients_connected">Clients Connected:</string>
-    <string name="sasdf">efaedf</string>
-    <string name="title_activity_test_d_b">TestDB</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="LostConnectionServerWithClient">Perdeu se a conectão com um dos clientes.</string>
-    <string name="LostConnectioWithServer">Lost connection with Server.</string>
-    <string name="CantConnectToServer">Can\'t connect to server</string>
-    <string name="serverIpNotFound">Server IP not found</string>
-
-
 </resources>
