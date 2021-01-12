@@ -11,4 +11,5 @@
     <string name="button_connect">Connect</string>
     <string name="error_address">Address not recognized</string>
     <string name="button_cancel">Cancel</string>
+    <string name="GameName">Nome do Jogo</string>
 </resources>
