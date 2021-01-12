@@ -18,10 +18,18 @@ import androidx.core.app.ActivityCompat
 import kotlinx.android.synthetic.main.activity_loading_server.*
 import java.lang.Exception
 import android.Manifest
+import android.os.PersistableBundle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+
+
 
 class LoadingServerActivity : AppCompatActivity() {
+    //vai buscar o wifi manager
     val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+    //obter ip
     val ip = wifiManager.connectionInfo.ipAddress
+//    mete o ip no strIpAddress
     val strIPAddress = String.format("%d.%d.%d.%d",
         ip and 0xff,
         (ip shr 8) and 0xff,
@@ -29,10 +37,15 @@ class LoadingServerActivity : AppCompatActivity() {
         (ip shr 24) and 0xff
 ***REMOVED***
 
+    //modelo que é criado
+    private val model = ViewModelProvider(this).get(LoadingServerViewModel::class.java)
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_loading_server)
 
+        setContentView(R.layout.activity_loading_server)
 
         tvserver_ip.text=String.format("Server IP: %s",strIPAddress)
 
