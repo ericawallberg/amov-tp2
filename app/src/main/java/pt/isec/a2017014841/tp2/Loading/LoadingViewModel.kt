@@ -14,8 +14,8 @@ import kotlin.concurrent.thread
 class LoadingViewModel : ViewModel() {
 
 
-  val SERVER_PORT = 9999
-  val MOVE_NONE = 0
+    val SERVER_PORT = 9999
+    val MOVE_NONE = 0
 
 
     /**
@@ -136,7 +136,7 @@ class LoadingViewModel : ViewModel() {
                 while (state.value != State.GAME_OVER) {
                     val message = bufI.readLine()
                     val move = message.toIntOrNull() ?: MOVE_NONE
-                    fazAcao(move)
+                    //fazAcao(move)
                 }
 
             } catch (_: Exception) {
@@ -170,7 +170,4 @@ class LoadingViewModel : ViewModel() {
         nClients.postValue(serverClientConnections.size)
     }
 
-    fun fazAcao(movimentosensual: Int) {
-        //TODO
-    }
 }
