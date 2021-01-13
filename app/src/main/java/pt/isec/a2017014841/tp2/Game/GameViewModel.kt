@@ -1,4 +1,4 @@
-package pt.isec.a2017014841.tp2
+package pt.isec.a2017014841.tp2.Game
 
 import androidx.lifecycle.ViewModel
 

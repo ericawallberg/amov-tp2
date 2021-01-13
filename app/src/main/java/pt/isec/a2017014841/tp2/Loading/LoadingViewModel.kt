@@ -1,17 +1,33 @@
-package pt.isec.a2017014841.tp2
+package pt.isec.a2017014841.tp2.Loading
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.android.synthetic.main.activity_loading_server.*
+import pt.isec.a2017014841.tp2.R
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.ServerSocket
 import java.net.Socket
 import kotlin.concurrent.thread
 
-const val SERVER_PORT = 9999
-const val MOVE_NONE = 0
-
 class LoadingViewModel : ViewModel() {
+
+
+  val SERVER_PORT = 9999
+  val MOVE_NONE = 0
+
+
+    /**
+     * dados de uma ligacao de um servidor para um cliente
+     */
+    private var socket: Socket? = null
+    private var threadComm: Thread? = null
+    private val socketO: OutputStream?
+        get() = socket?.getOutputStream()
+    private val socketI: InputStream?
+        get() = socket?.getInputStream()
+
     enum class State {
         STARTING /*comecar o jogo*/, GAME_OVER /*o jogo acabou lol*/
     }
@@ -27,16 +43,12 @@ class LoadingViewModel : ViewModel() {
     /**
      * dados de uma ligacao de um servidor para um cliente
      */
-    inner class ServerClientConnection(private var socket: Socket, private var threadComm: Thread) {
-        private val socketO: OutputStream?
-            get() = socket.getOutputStream()
-        private val socketI: InputStream?
-            get() = socket.getInputStream()
-    }
+    data class ServerClientConnection(private val socket: Socket, private val threadComm: Thread);
 
     val serverClientConnections = mutableListOf<ServerClientConnection>()
 
     val state = MutableLiveData(State.STARTING)
+    val nClients = MutableLiveData(0)
 
     //cria o server
     fun startServer() {
@@ -50,10 +62,13 @@ class LoadingViewModel : ViewModel() {
             serverSocket = ServerSocket(SERVER_PORT)
             serverSocket?.apply {
                 try {
+
                     while (state.value != State.GAME_OVER) {
                         addClient(serverSocket!!.accept())
                     }
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    Log.e("começar server", e.stackTrace.toString());
+                    e.printStackTrace()
                     connectionState.postValue(ConnectionState.CONNECTION_ERROR)
                 } finally {
                     serverSocket?.close()
@@ -85,62 +100,59 @@ class LoadingViewModel : ViewModel() {
 //    }
 //
 
-//    coisas do client nao pertencem aqui TODO: remover daqui, e mover para o sitio certo
-//    fun startClient(serverIP: String, serverPort: Int = SERVER_PORT) {
-//        if (socket != null || connectionState.value != ConnectionState.SETTING_PARAMETERS)
-//            return
-//        thread {
-//            connectionState.postValue(ConnectionState.CLIENT_CONNECTING)
-//            try {
-//                val newsocket = Socket(serverIP, serverPort)
-//                startComm(newsocket)
-//            } catch (_: Exception) {
-//                connectionState.postValue(ConnectionState.CONNECTION_ERROR)
-//            }
-//        }
-//    }
+    fun startClient(serverIP: String, serverPort: Int = SERVER_PORT) {
+        if (socket != null || connectionState.value != ConnectionState.SETTING_PARAMETERS)
+            return
+        thread {
+            connectionState.postValue(ConnectionState.CLIENT_CONNECTING)
+            try {
+                val newsocket = Socket(serverIP, serverPort)
+                //TODO: enviar as coordenadas ao server e verificar se estao a menos de 100m
+                startComm(newsocket)
 
+            } catch (e: Exception) {
+                Log.e("começar cliente", e.stackTrace.toString());
+                connectionState.postValue(ConnectionState.CONNECTION_ERROR)
+                throw Exception()
+            }
+        }
+    }
 
-//    /**
-//     * Começa uma conecao com client/server
-//     */
-//    private fun startComm(newSocket: Socket) {
-//        //condicao para nao fazer conecao
-//        //    return
-//
-//        var tempocket = newSocket
-//
-//        threadComms.add(thread {
-//            try {
-//                if (new fe == null)
-//                    return@thread
-//
-//                connectionState.postValue(ConnectionState.CONNECTION_ESTABLISHED)
-//                val bufI = socketI!!.bufferedReader()
-//                while (state.value != State.GAME_OVER) {
-//                    val message = bufI.readLine()
-//                    val move = message.toIntOrNull() ?: MOVE_NONE
-//                    fazAcao(move)
-//                }
-//
-//            } catch (_: Exception) {
-//            } finally {
-//                //acaba o jogo do coiso
-//                stopGame()
-//            }
-//        })
-//    }
+    /**
+     * Começa uma conecao com client/server
+     */
+    private fun startComm(newSocket: Socket) {
+        //condicao para nao fazer conecao
+        //    return
+
+        socket = newSocket
+        serverClientConnections.add(ServerClientConnection(newSocket, thread {
+            try {
+                if (socketI == null)
+                    return@thread
+
+                connectionState.postValue(ConnectionState.CONNECTION_ESTABLISHED)
+                val bufI = socketI!!.bufferedReader()
+                while (state.value != State.GAME_OVER) {
+                    val message = bufI.readLine()
+                    val move = message.toIntOrNull() ?: MOVE_NONE
+                    fazAcao(move)
+                }
+
+            } catch (_: Exception) {
+            }
+        }))
+    }
 
     /**
      * Aceita connecao de um novo cliente
      */
-    fun addClient(newSocket : Socket) {
+    fun addClient(newSocket: Socket) {
 
-        serverClientConnections.add(ServerClientConnection(newSocket, thread{
+        serverClientConnections.add(ServerClientConnection(newSocket, thread {
             try {
                 if (newSocket.getInputStream() == null)
                     return@thread
-
                 connectionState.postValue(ConnectionState.CONNECTION_ESTABLISHED)
                 val bufI = newSocket.getInputStream()!!.bufferedReader()
 //                TODO: recebe informações do client
@@ -150,9 +162,12 @@ class LoadingViewModel : ViewModel() {
 //                    fazAcao(move)
 //                }
 
-        }catch (_:Exception){}
+            } catch ( e : Exception) {
+                e.printStackTrace()
+            }
         }))
-
+        Log.i("conecao do cliente","cleintes conectados: "+ serverClientConnections.size)
+        nClients.postValue(serverClientConnections.size)
     }
 
     fun fazAcao(movimentosensual: Int) {
