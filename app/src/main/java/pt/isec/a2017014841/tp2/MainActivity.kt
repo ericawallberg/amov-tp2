@@ -1,9 +1,5 @@
 package pt.isec.a2017014841.tp2
 
-import pt.isec.a2017014841.tp2.*
-
-
-
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,6 +7,7 @@ import android.view.LayoutInflater
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import android.R.*
+import android.util.Log
 import android.widget.Toast
 import com.github.onikenx.networkandroid.NetUtils
 import kotlinx.android.synthetic.main.activity_main.*
@@ -31,9 +28,13 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        btnew_game.setOnClickListener{startGame(SERVER_MODE)}
-        btjoin_game.setOnClickListener{startGame(CLIENT_MODE)}
+        findViewById<Button>(R.id.btnew_game).setOnClickListener{
+            startGame(SERVER_MODE)
+        }
 
+        findViewById<Button>(R.id.btjoin_game).setOnClickListener{
+            startGame(CLIENT_MODE)
+        }
 
     }
 
@@ -44,8 +45,7 @@ class MainActivity : AppCompatActivity() {
             }
             startActivity(intent)
         }
-
-        else if(mode==SERVER_MODE){
+        else if(mode== SERVER_MODE){
             val intent = Intent(this, LoadingServerActivity::class.java)
             startActivity(intent)
         }
