@@ -29,13 +29,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnew_game).setOnClickListener{
-            val intent = Intent(this, LoadingServerActivity::class.java)
-            startActivity(intent)
+            startGame(SERVER_MODE)
         }
 
         findViewById<Button>(R.id.btjoin_game).setOnClickListener{
-            val intent = Intent(this, GameActivity::class.java)
-            startActivity(intent)
+            startGame(CLIENT_MODE)
         }
 
     }
