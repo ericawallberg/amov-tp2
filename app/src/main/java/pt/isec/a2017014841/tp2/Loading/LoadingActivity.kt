@@ -56,6 +56,18 @@ class LoadingActivity : AppCompatActivity() {
         model.nClients.observe(this@LoadingActivity) {
             tvclients_connected.text =
                 String.format("%s %s", getString(R.string.clients_connected), model.nClients.value.toString())
+            if(model.nClients.value!! >=2) {
+                btcreate_team.isEnabled=true
+                btcreate_team.isClickable=true
+                btcreate_team.setOnClickListener {
+                    CreateTeam()
+                }
+            }
+            else{
+                btcreate_team.isEnabled=false
+                btcreate_team.isClickable=false
+            }
+
         }
 
         model.startServer()
@@ -73,12 +85,7 @@ class LoadingActivity : AppCompatActivity() {
 
         tvserver_ip.text = String.format("Server IP: %s", strIPAddress)
 
-        btcreate_team.setOnClickListener {
-            CreateTeam()
-        }
-
         btsend_sms.setOnClickListener {
-//            SendSMS()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (ActivityCompat.checkSelfPermission(
                         this,
