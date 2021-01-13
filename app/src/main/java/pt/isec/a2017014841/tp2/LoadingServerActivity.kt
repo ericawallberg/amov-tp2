@@ -18,35 +18,26 @@ import androidx.core.app.ActivityCompat
 import kotlinx.android.synthetic.main.activity_loading_server.*
 import java.lang.Exception
 import android.Manifest
-import android.os.PersistableBundle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-
-
+import android.content.Intent
+import android.text.InputType
 
 class LoadingServerActivity : AppCompatActivity() {
-    //vai buscar o wifi manager
-    val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
-    //obter ip
-    val ip = wifiManager.connectionInfo.ipAddress
-//    mete o ip no strIpAddress
-    val strIPAddress = String.format("%d.%d.%d.%d",
-        ip and 0xff,
-        (ip shr 8) and 0xff,
-        (ip shr 16) and 0xff,
-        (ip shr 24) and 0xff
-    )
 
-    //modelo que é criado
-    private val model = ViewModelProvider(this).get(LoadingServerViewModel::class.java)
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
-    }
+    lateinit var strIPAddress: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_loading_server)
 
+
+        val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+        val ip = wifiManager.connectionInfo.ipAddress
+        strIPAddress = String.format("%d.%d.%d.%d",
+            ip and 0xff,
+            (ip shr 8) and 0xff,
+            (ip shr 16) and 0xff,
+            (ip shr 24) and 0xff
+        )
         tvserver_ip.text=String.format("Server IP: %s",strIPAddress)
 
         btcreate_team.setOnClickListener{
@@ -54,22 +45,31 @@ class LoadingServerActivity : AppCompatActivity() {
         }
 
         btsend_sms.setOnClickListener{
-            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            SendSMS()
+           /* if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
                 if(ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED){
                     SendSMS()
                 }
                 else{
                     ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SEND_SMS, Manifest.permission.SEND_SMS),1)
                 }
-            }
+            }*/
         }
+
+
     }
 
     fun CreateTeam(){
+        //CRIA DOC NA FIREBASE
         //nome do documento: coordenadas iniciais (j1), num jogadores, data/hora
 
-
-        //cria documento no firebase
+        //MANDA PARA A GAMEACTIVITY
+            /*
+            val intent = Intent(this, GameActivity::class.java).apply {
+                putExtra("mode", CLIENT_MODE)
+            }
+            startActivity(intent)
+            */
     }
 
     fun SendSMS(){
@@ -78,8 +78,8 @@ class LoadingServerActivity : AppCompatActivity() {
             inputType = TYPE_CLASS_NUMBER
         }
         val dlg = AlertDialog.Builder(this).run {
-            setTitle(getString(R.string.client_mode))
-            setMessage(getString(R.string.ask_ip))
+            setTitle(getString(R.string.msgsend_sms))
+            setMessage(getString(R.string.phone_no))
             setPositiveButton(getString(R.string.send_sms)) { _: DialogInterface, _: Int ->
                 val numtele = phoneNo.text.toString().trim()
                 val ipaddr = strIPAddress.toString().trim()
@@ -92,15 +92,14 @@ class LoadingServerActivity : AppCompatActivity() {
                     e.printStackTrace()
                     Toast.makeText(this@LoadingServerActivity, "Failed to send message", Toast.LENGTH_SHORT).show()
                 }
-                finish()
             }
             setNegativeButton(getString(R.string.button_cancel)) { _: DialogInterface, _: Int ->
-                finish()
             }
-            setCancelable(false)
+            setCancelable(true)
             setView(phoneNo)
             create()
         }
         dlg.show()
     }
+
 }

@@ -94,12 +94,12 @@ class GameActivity : AppCompatActivity() {
             setTitle(getString(R.string.server_mode))
             setView(ll)
             setOnCancelListener {
-                model.stopServer()
+                Dados.gameViewModel.stopServer()
                 finish()
             }
             create()
         }
-        model.startServer()
+        Dados.gameViewModel.startServer()
 
         dlg?.show()
 
@@ -135,7 +135,7 @@ class GameActivity : AppCompatActivity() {
                     Toast.makeText(this@GameActivity, getString(R.string.error_address), Toast.LENGTH_LONG).show()
                     finish()
                 } else {
-                    model.startClient(edtBox.text.toString())
+                    Dados.gameViewModel.startClient(edtBox.text.toString())
                 }
             }
 //            setNeutralButton(getString(R.string.btn_emulator)) { _: DialogInterface, _: Int ->
