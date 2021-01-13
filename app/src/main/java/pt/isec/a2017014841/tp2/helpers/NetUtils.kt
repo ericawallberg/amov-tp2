@@ -1,9 +1,8 @@
-package com.github.onikenx.networkandroid
+package pt.isec.a2017014841.tp2.helpers
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import java.net.HttpURLConnection
 import java.net.URL

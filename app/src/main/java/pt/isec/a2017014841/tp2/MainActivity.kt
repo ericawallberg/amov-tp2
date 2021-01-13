@@ -1,19 +1,19 @@
 package pt.isec.a2017014841.tp2
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.widget.Button
-import androidx.appcompat.app.AlertDialog
 import android.R.*
-import android.util.Log
+import android.content.Intent
 import android.widget.Toast
-import com.github.onikenx.networkandroid.NetUtils
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
+import pt.isec.a2017014841.tp2.helpers.NetUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.insert_ip.view.*
 import pt.isec.a2017014841.tp2.Dados.CLIENT_MODE
 import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
+import pt.isec.a2017014841.tp2.Loading.LoadingActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,6 +38,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+    }
+
+    fun startGame(mode : Int) {
+        val intent = Intent(this, LoadingActivity::class.java).apply {
+            putExtra("mode",mode)
+        }
+        startActivity(intent)
     }
 
 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoadingServerActivity">
+    tools:context=".Loading.LoadingActivity">
 
 
     <ProgressBar
@@ -47,7 +47,7 @@
         android:layout_width="335dp"
         android:layout_height="34dp"
         android:layout_marginBottom="148dp"
-        android:text="Clients Connected: "
+        android:text="@string/clients_connected"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/btsend_sms"
         app:layout_constraintEnd_toEndOf="parent"
