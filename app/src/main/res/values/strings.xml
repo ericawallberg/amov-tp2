@@ -13,4 +13,6 @@
     <string name="button_cancel">Cancel</string>
     <string name="GameName">Nome do Jogo</string>
     <string name="noNetwork">No network available</string>
+    <string name="clients_connected">Clients Connected:</string>
+    <string name="sasdf">efaedf</string>
 </resources>

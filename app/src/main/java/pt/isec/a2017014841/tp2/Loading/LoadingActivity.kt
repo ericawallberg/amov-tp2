@@ -1,72 +1,49 @@
 package pt.isec.a2017014841.tp2.Loading
 
-import android.Manifest
 import android.content.DialogInterface
 import android.content.pm.PackageManager
-import android.location.Location
 import android.net.wifi.WifiManager
 import android.os.Build
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.telephony.SmsManager
 import android.text.InputFilter
-import android.text.InputType
 import android.text.InputType.TYPE_CLASS_NUMBER
 import android.text.Spanned
-import android.util.Log
 import android.util.Patterns
 import android.widget.EditText
 import android.widget.Toast
-import android.widget.Toast.makeText
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import kotlinx.android.synthetic.main.activity_loading_server.*
+import java.lang.Exception
+import android.Manifest
+import android.text.InputType
+import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import pt.isec.a2017014841.tp2.Dados.CLIENT_MODE
 import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
-import pt.isec.a2017014841.tp2.Dados.isServer
-import pt.isec.a2017014841.tp2.Dados.server_client_mode_text
-
-import android.Manifest.permission.SEND_SMS
-import android.Manifest.permission.READ_SMS
-import android.content.Context
-import android.content.Intent
-import android.location.LocationManager
-import com.google.type.DateTime
-import kotlinx.android.synthetic.main.activity_loading_server.*
-import pt.isec.a2017014841.tp2.Dados
 import pt.isec.a2017014841.tp2.R
-import pt.isec.a2017014841.tp2.Dados.actualLocation
-import pt.isec.a2017014841.tp2.Dados.errorDialog
-import pt.isec.a2017014841.tp2.Dados.nomeDaEquipa
-import pt.isec.a2017014841.tp2.Dados.onCreateDados
-import pt.isec.a2017014841.tp2.Game.GameActivity
-import java.util.*
+import java.net.Socket
+import kotlin.concurrent.thread
 
 class LoadingActivity : AppCompatActivity() {
+
+
     val SERVER_PORT = 9999
     lateinit var strIPAddress: String
     lateinit var model: LoadingViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model = ViewModelProvider(this).get(LoadingViewModel::class.java)
-        model.setContext(this)
-        model.errorText.observe(this) {
 
-        }
+        model = ViewModelProvider(this).get(LoadingViewModel::class.java)
+
         if (model.connectionState.value != LoadingViewModel.ConnectionState.CONNECTION_ESTABLISHED) {
             when (intent.getIntExtra("mode", SERVER_MODE)) {
-                SERVER_MODE -> {
-                    isServer = true
-                    server_client_mode_text = getString(R.string.server_mode)
-                    startAsServer()
-                }
-                CLIENT_MODE -> {
-                    isServer = false
-                    server_client_mode_text = getString(R.string.client_mode)
-                    startAsClient()
-                }
+                SERVER_MODE -> startAsServer()
+                CLIENT_MODE -> startAsClient()
             }
         }
 
@@ -78,22 +55,7 @@ class LoadingActivity : AppCompatActivity() {
 
         model.nClients.observe(this@LoadingActivity) {
             tvclients_connected.text =
-                String.format(
-                    "%s %s",
-                    getString(R.string.clients_connected),
-                    model.nClients.value.toString()
-                )
-            if (model.nClients.value!! >= 2) {
-                btcreate_team.isEnabled = true
-                btcreate_team.isClickable = true
-                btcreate_team.setOnClickListener {
-                    CreateTeam()
-                }
-            } else {
-                btcreate_team.isEnabled = false
-                btcreate_team.isClickable = false
-            }
-
+                String.format("%s %s", getString(R.string.clients_connected), model.nClients.value.toString())
         }
 
         model.startServer()
@@ -111,7 +73,12 @@ class LoadingActivity : AppCompatActivity() {
 
         tvserver_ip.text = String.format("Server IP: %s", strIPAddress)
 
+        btcreate_team.setOnClickListener {
+            CreateTeam()
+        }
+
         btsend_sms.setOnClickListener {
+//            SendSMS()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (ActivityCompat.checkSelfPermission(
                         this,
@@ -125,17 +92,9 @@ class LoadingActivity : AppCompatActivity() {
                         arrayOf(Manifest.permission.SEND_SMS, Manifest.permission.SEND_SMS),
                         1
                     )
-
                 }
             }
         }
-    }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (isServer)
-            model.stopServer()
     }
 
     private fun CreateTeam() {
@@ -148,35 +107,6 @@ class LoadingActivity : AppCompatActivity() {
             }
             startActivity(intent)
             */
-
-
-
-        Dados.nomeDaEquipa =
-            actualLocation.latitude.toString() + actualLocation.longitude.toString() + model.nClients.value.toString() + DateTime.getDefaultInstance()
-                .toString()
-        Toast.makeText(this, nomeDaEquipa, Toast.LENGTH_LONG).show()
-
-        val mapusers = model.getListOfUsers()
-        mapusers[1.toString()]= Dados.locationToString(actualLocation)
-        onCreateDados(nomeDaEquipa, mapusers)
-        Toast.makeText(this, "TEAM CREATED", Toast.LENGTH_SHORT).show()
-        val intent = Intent(this, GameActivity::class.java)
-        startActivity(intent)
-
-
-    }
-
-
-    fun onLocationChanged() {
-
-    }
-
-    private fun startGame() {
-        //TODO: verificar as locs
-
-        //fazer o nome
-
-
     }
 
     private fun SendSMS() {
@@ -199,11 +129,7 @@ class LoadingActivity : AppCompatActivity() {
                         .show()
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Toast.makeText(
-                        this@LoadingActivity,
-                        "Failed to send message",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this@LoadingActivity, "Failed to send message", Toast.LENGTH_SHORT).show()
                 }
             }
             setNegativeButton(getString(R.string.button_cancel)) { _: DialogInterface, _: Int ->
@@ -236,38 +162,40 @@ class LoadingActivity : AppCompatActivity() {
 
             })
         }
-        AlertDialog.Builder(this).run {
-            setTitle(server_client_mode_text)
+        val dlg = AlertDialog.Builder(this).run {
+            setTitle(getString(R.string.client_mode))
             setMessage(getString(R.string.ask_ip))
+
             setPositiveButton(getString(R.string.button_connect)) { _: DialogInterface, _: Int ->
                 val strIP = edtBox.text.toString()
                 if (strIP.isEmpty() || !Patterns.IP_ADDRESS.matcher(strIP).matches()) {
-                    Toast.makeText(
-                        this@LoadingActivity,
-                        getString(R.string.error_address),
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(this@LoadingActivity, getString(R.string.error_address), Toast.LENGTH_LONG).show()
                     finish()
                 } else {
-                    try {
+                    try{
                         model.startClient(edtBox.text.toString())
-                    } catch (_: Exception) {
-                        onErrorShow(getString(R.string.serverIpNotFound))
+                    }catch(_ :Exception)
+                    {
+                        Toast.makeText(this@LoadingActivity, "Server IP not found", Toast.LENGTH_LONG).show()
                         finish()
                     }
                 }
             }
+//            setNeutralButton(getString(R.string.btn_emulator)) { _: DialogInterface, _: Int ->
+//                model.startClient("10.0.2.2", SERVER_PORT-1)
+//                // Add port redirect on the Server Emulator:
+//                // telnet localhost <5554|5556|5558|...>
+//                // auth <key>
+//                // redir add tcp:9998:9999
+//            }
             setNegativeButton(getString(R.string.button_cancel)) { _: DialogInterface, _: Int ->
                 finish()
             }
             setCancelable(false)
             setView(edtBox)
             create()
-        }.show()
-    }
-
-    fun onErrorShow(msg: String, context: Context = this@LoadingActivity) {
-        errorDialog(server_client_mode_text, msg, context)
+        }
+        dlg.show()
     }
 
 }
