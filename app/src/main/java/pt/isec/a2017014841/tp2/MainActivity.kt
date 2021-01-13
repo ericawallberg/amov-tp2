@@ -13,7 +13,10 @@ import androidx.appcompat.app.AlertDialog
 import android.R.*
 import android.widget.Toast
 import com.github.onikenx.networkandroid.NetUtils
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.insert_ip.view.*
+import pt.isec.a2017014841.tp2.Dados.CLIENT_MODE
+import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,19 +24,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //verifica se tem rede
         if(!NetUtils.verifyNetworkStateV2(this)){
-            Toast.makeText(this,"No network available",Toast.LENGTH_SHORT).show()
+            Toast.makeText(this,getString(R.string.noNetwork),Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
-        findViewById<Button>(R.id.btnew_game).setOnClickListener{
-            startGame(SERVER_MODE)
-        }
+        btnew_game.setOnClickListener{startGame(SERVER_MODE)}
+        btjoin_game.setOnClickListener{startGame(CLIENT_MODE)}
 
-        findViewById<Button>(R.id.btjoin_game).setOnClickListener{
-            startGame(CLIENT_MODE)
-        }
 
     }
 
@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
             }
             startActivity(intent)
         }
+
         else if(mode==SERVER_MODE){
             val intent = Intent(this, LoadingServerActivity::class.java)
             startActivity(intent)
