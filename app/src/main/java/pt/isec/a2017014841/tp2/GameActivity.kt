@@ -22,88 +22,87 @@ const val SERVER_MODE = 0
 const val CLIENT_MODE = 1
 class GameActivity : AppCompatActivity() {
     private var dlg: AlertDialog? = null
-    private val model = ViewModelProvider(this).get(GameViewModel::class.java)
+    private lateinit var model :LoadingClientViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_game)
-
-
+        model = ViewModelProvider(this).get(LoadingClientViewModel::class.java)
        val actionBar = supportActionBar
 
         if (actionBar != null) {
             actionBar.title = getString(R.string.GameName)
             actionBar.setDisplayHomeAsUpEnabled(true)
         }
-
-        if (model..value != LoadingServerViewModel.ConnectionState.CONNECTION_ESTABLISHED) {
-            when (intent.getIntExtra("mode", SERVER_MODE)) {
-                SERVER_MODE -> startAsServer()
-                CLIENT_MODE -> startAsClient()
-            }
-        }
+//
+//        if (model.state.value != LoadingServerViewModel.ConnectionState.CONNECTION_ESTABLISHED) {
+//            when (intent.getIntExtra("mode", SERVER_MODE)) {
+//                SERVER_MODE -> startAsServer()
+                /*CLIENT_MODE ->*/ startAsClient()
+//            }
+//        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
     }
-
-    private fun startAsServer(){
-        val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
-        val ip = wifiManager.connectionInfo.ipAddress
-        val strIPAddress = String.format("%d.%d.%d.%d",
-            ip and 0xff,
-            (ip shr 8) and 0xff,
-            (ip shr 16) and 0xff,
-            (ip shr 24) and 0xff
-        )
-
-        val ll = LinearLayout(this).apply {
-            val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-            this.setPadding(50, 50, 50, 50)
-            layoutParams = params
-            setBackgroundColor(Color.rgb(240, 224, 208))
-            orientation = LinearLayout.VERTICAL
-            addView(ProgressBar(context).apply {
-                isIndeterminate = true
-                val paramsPB = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-                paramsPB.gravity = Gravity.CENTER_VERTICAL
-                layoutParams = paramsPB
-                indeterminateTintList = ColorStateList.valueOf(Color.rgb(96, 96, 32))
-            })
-            addView(TextView(context).apply {
-                val paramsTV = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-                layoutParams = paramsTV
-                text = String.format(getString(R.string.msg_ip_address),strIPAddress)
-                textSize = 20f
-                setTextColor(Color.rgb(96, 96, 32))
-                textAlignment = View.TEXT_ALIGNMENT_CENTER
-            })
-            addView(Button(context).apply {
-                setText("SEND IP ADDRESS THROUGH SMS")
-                setTextSize(10.0f)
-                setEnabled(false)
-            })
-            addView(Button(context).apply {
-                setText("CREATE TEAM")
-                setTextSize(10.0f)
-                setEnabled(false)
-            })
-        }
-        dlg = AlertDialog.Builder(this).run {
-            setTitle(getString(R.string.server_mode))
-            setView(ll)
-            setOnCancelListener {
-                Dados.gameViewModel.stopServer()
-                finish()
-            }
-            create()
-        }
-        Dados.gameViewModel.startServer()
-
-        dlg?.show()
-
-    }
+//
+//    private fun startAsServer(){
+//        val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+//        val ip = wifiManager.connectionInfo.ipAddress
+//        val strIPAddress = String.format("%d.%d.%d.%d",
+//            ip and 0xff,
+//            (ip shr 8) and 0xff,
+//            (ip shr 16) and 0xff,
+//            (ip shr 24) and 0xff
+//        )
+//
+//        val ll = LinearLayout(this).apply {
+//            val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+//            this.setPadding(50, 50, 50, 50)
+//            layoutParams = params
+//            setBackgroundColor(Color.rgb(240, 224, 208))
+//            orientation = LinearLayout.VERTICAL
+//            addView(ProgressBar(context).apply {
+//                isIndeterminate = true
+//                val paramsPB = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+//                paramsPB.gravity = Gravity.CENTER_VERTICAL
+//                layoutParams = paramsPB
+//                indeterminateTintList = ColorStateList.valueOf(Color.rgb(96, 96, 32))
+//            })
+//            addView(TextView(context).apply {
+//                val paramsTV = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+//                layoutParams = paramsTV
+//                text = String.format(getString(R.string.msg_ip_address),strIPAddress)
+//                textSize = 20f
+//                setTextColor(Color.rgb(96, 96, 32))
+//                textAlignment = View.TEXT_ALIGNMENT_CENTER
+//            })
+//            addView(Button(context).apply {
+//                setText("SEND IP ADDRESS THROUGH SMS")
+//                setTextSize(10.0f)
+//                setEnabled(false)
+//            })
+//            addView(Button(context).apply {
+//                setText("CREATE TEAM")
+//                setTextSize(10.0f)
+//                setEnabled(false)
+//            })
+//        }
+//        dlg = AlertDialog.Builder(this).run {
+//            setTitle(getString(R.string.server_mode))
+//            setView(ll)
+//            setOnCancelListener {
+//                model.stopServer()
+//                finish()
+//            }
+//            create()
+//        }
+//        model.startServer()
+//
+//        dlg?.show()
+//
+//    }
 
     private fun startAsClient(){
         val edtBox = EditText(this).apply {
@@ -135,7 +134,7 @@ class GameActivity : AppCompatActivity() {
                     Toast.makeText(this@GameActivity, getString(R.string.error_address), Toast.LENGTH_LONG).show()
                     finish()
                 } else {
-                    Dados.gameViewModel.startClient(edtBox.text.toString())
+                    model.startClient(edtBox.text.toString())
                 }
             }
 //            setNeutralButton(getString(R.string.btn_emulator)) { _: DialogInterface, _: Int ->
