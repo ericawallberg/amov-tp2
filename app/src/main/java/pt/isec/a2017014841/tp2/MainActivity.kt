@@ -29,26 +29,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnew_game).setOnClickListener{
-            startGame(SERVER_MODE)
-        }
-
-        findViewById<Button>(R.id.btjoin_game).setOnClickListener{
-            startGame(CLIENT_MODE)
-        }
-
-    }
-
-    fun startGame(mode: Int){
-        if(mode== CLIENT_MODE) {
-            val intent = Intent(this, GameActivity::class.java).apply {
-                putExtra("mode", mode)
-            }
-            startActivity(intent)
-        }
-        else if(mode== SERVER_MODE){
             val intent = Intent(this, LoadingServerActivity::class.java)
             startActivity(intent)
         }
+
+        findViewById<Button>(R.id.btjoin_game).setOnClickListener{
+            val intent = Intent(this, GameActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
 }

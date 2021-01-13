@@ -11,7 +11,7 @@ import kotlin.concurrent.thread
 const val SERVER_PORT = 9999
 const val MOVE_NONE = 0
 
-class LoadingServerViewModel : ViewModel() {
+class LoadingViewModel : ViewModel() {
     enum class State {
         STARTING /*comecar o jogo*/, GAME_OVER /*o jogo acabou lol*/
     }
