@@ -1,32 +1,30 @@
 package pt.isec.a2017014841.tp2.Loading
 
+import android.Manifest
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.net.wifi.WifiManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.telephony.SmsManager
 import android.text.InputFilter
+import android.text.InputType
 import android.text.InputType.TYPE_CLASS_NUMBER
 import android.text.Spanned
+import android.util.Log
 import android.util.Patterns
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import kotlinx.android.synthetic.main.activity_loading_server.*
-import java.lang.Exception
-import android.Manifest
-import android.text.InputType
-import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
+import kotlinx.android.synthetic.main.activity_loading_server.*
 import pt.isec.a2017014841.tp2.Dados.CLIENT_MODE
 import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
 import pt.isec.a2017014841.tp2.R
-import java.net.Socket
-import kotlin.concurrent.thread
+import pt.isec.a2017014841.tp2.helpers.NetUtils.getPublicIp
 
 class LoadingActivity : AppCompatActivity() {
 
@@ -55,17 +53,20 @@ class LoadingActivity : AppCompatActivity() {
 
         model.nClients.observe(this@LoadingActivity) {
             tvclients_connected.text =
-                String.format("%s %s", getString(R.string.clients_connected), model.nClients.value.toString())
-            if(model.nClients.value!! >=2) {
-                btcreate_team.isEnabled=true
-                btcreate_team.isClickable=true
+                String.format(
+                    "%s %s",
+                    getString(R.string.clients_connected),
+                    model.nClients.value.toString()
+            ***REMOVED***
+            if (model.nClients.value!! >= 2) {
+                btcreate_team.isEnabled = true
+                btcreate_team.isClickable = true
                 btcreate_team.setOnClickListener {
                     CreateTeam()
                 }
-            }
-            else{
-                btcreate_team.isEnabled=false
-                btcreate_team.isClickable=false
+            } else {
+                btcreate_team.isEnabled = false
+                btcreate_team.isClickable = false
             }
 
         }
@@ -83,7 +84,7 @@ class LoadingActivity : AppCompatActivity() {
             (ip shr 24) and 0xff
     ***REMOVED***
 
-        tvserver_ip.text = String.format("Server IP: %s", strIPAddress)
+        tvserver_ip.text = String.format("Server IP: %s", getPublicIp())
 
         btsend_sms.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -136,7 +137,11 @@ class LoadingActivity : AppCompatActivity() {
                         .show()
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Toast.makeText(this@LoadingActivity, "Failed to send message", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@LoadingActivity,
+                        "Failed to send message",
+                        Toast.LENGTH_SHORT
+                ***REMOVED***.show()
                 }
             }
             setNegativeButton(getString(R.string.button_cancel)) { _: DialogInterface, _: Int ->
@@ -169,21 +174,28 @@ class LoadingActivity : AppCompatActivity() {
 
             })
         }
-        val dlg = AlertDialog.Builder(this).run {
+        AlertDialog.Builder(this).run {
             setTitle(getString(R.string.client_mode))
             setMessage(getString(R.string.ask_ip))
 
             setPositiveButton(getString(R.string.button_connect)) { _: DialogInterface, _: Int ->
                 val strIP = edtBox.text.toString()
                 if (strIP.isEmpty() || !Patterns.IP_ADDRESS.matcher(strIP).matches()) {
-                    Toast.makeText(this@LoadingActivity, getString(R.string.error_address), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@LoadingActivity,
+                        getString(R.string.error_address),
+                        Toast.LENGTH_LONG
+                ***REMOVED***.show()
                     finish()
                 } else {
-                    try{
+                    try {
                         model.startClient(edtBox.text.toString())
-                    }catch(_ :Exception)
-                    {
-                        Toast.makeText(this@LoadingActivity, "Server IP not found", Toast.LENGTH_LONG).show()
+                    } catch (_: Exception) {
+                        Toast.makeText(
+                            this@LoadingActivity,
+                            "Server IP not found",
+                            Toast.LENGTH_LONG
+                    ***REMOVED***.show()
                         finish()
                     }
                 }
@@ -201,8 +213,7 @@ class LoadingActivity : AppCompatActivity() {
             setCancelable(false)
             setView(edtBox)
             create()
-        }
-        dlg.show()
+        }.show()
     }
 
 }
