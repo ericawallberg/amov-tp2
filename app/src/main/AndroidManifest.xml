@@ -7,8 +7,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -17,7 +17,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Tp2">
-        <activity android:name=".Loading.LoadingActivity"></activity>
+        <activity
+            android:name=".TestDB"
+            android:label="@string/title_activity_test_d_b"
+            android:theme="@style/Theme.Tp2.NoActionBar"></activity>
+        <activity android:name=".Loading.LoadingActivity" />
         <activity android:name=".Game.GameActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -26,6 +30,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Authentication" />
     </application>
 
 </manifest>
