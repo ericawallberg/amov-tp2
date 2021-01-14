@@ -100,6 +100,7 @@ class LoadingViewModel : ViewModel() {
 //    }
 //
 
+
     fun startClient(serverIP: String, serverPort: Int = SERVER_PORT) {
         if (socket != null || connectionState.value != ConnectionState.SETTING_PARAMETERS)
             return
@@ -113,7 +114,7 @@ class LoadingViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.e("começar cliente", e.stackTrace.toString());
                 connectionState.postValue(ConnectionState.CONNECTION_ERROR)
-                throw Exception()
+                //TODO: dar trigger a algo para que na view dé um aviso de erro
             }
         }
     }
