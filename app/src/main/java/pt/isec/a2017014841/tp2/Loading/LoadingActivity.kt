@@ -3,6 +3,7 @@ package pt.isec.a2017014841.tp2.Loading
 import android.Manifest
 import android.content.DialogInterface
 import android.content.pm.PackageManager
+import android.location.Location
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +16,7 @@ import android.util.Log
 import android.util.Patterns
 import android.widget.EditText
 import android.widget.Toast
+import android.widget.Toast.makeText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -23,25 +25,41 @@ import androidx.lifecycle.observe
 import kotlinx.android.synthetic.main.activity_loading_server.*
 import pt.isec.a2017014841.tp2.Dados.CLIENT_MODE
 import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
+import pt.isec.a2017014841.tp2.Dados.isServer
+import pt.isec.a2017014841.tp2.Dados.server_client_mode_text
 import pt.isec.a2017014841.tp2.R
 import pt.isec.a2017014841.tp2.helpers.NetUtils.getPublicIp
 
+import android.Manifest.permission.SEND_SMS
+import android.Manifest.permission.READ_SMS
+import android.content.Context
+import android.location.LocationManager
+import pt.isec.a2017014841.tp2.Dados.errorDialog
+
 class LoadingActivity : AppCompatActivity() {
-
-
     val SERVER_PORT = 9999
     lateinit var strIPAddress: String
     lateinit var model: LoadingViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         model = ViewModelProvider(this).get(LoadingViewModel::class.java)
+        model.setContext(this)
+        model.errorText.observe(this){
 
+        }
         if (model.connectionState.value != LoadingViewModel.ConnectionState.CONNECTION_ESTABLISHED) {
             when (intent.getIntExtra("mode", SERVER_MODE)) {
-                SERVER_MODE -> startAsServer()
-                CLIENT_MODE -> startAsClient()
+                SERVER_MODE -> {
+                    isServer = true
+                    server_client_mode_text = getString(R.string.server_mode)
+                    startAsServer()
+                }
+                CLIENT_MODE -> {
+                    isServer = false
+                    server_client_mode_text = getString(R.string.client_mode)
+                    startAsClient()
+                }
             }
         }
 
@@ -100,6 +118,7 @@ class LoadingActivity : AppCompatActivity() {
                         arrayOf(Manifest.permission.SEND_SMS, Manifest.permission.SEND_SMS),
                         1
                     )
+
                 }
             }
         }
@@ -115,6 +134,24 @@ class LoadingActivity : AppCompatActivity() {
             }
             startActivity(intent)
             */
+
+        val lm = getSystemService(LOCATION_SERVICE) as LocationManager
+
+//        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,500L, 5, onLocationChanged())
+    }
+    fun onLocationChanged(){
+
+    }
+
+    private fun startGame(){
+        //TODO: verificar as locs
+
+        //fazer o nome
+
+
+
+
+
     }
 
     private fun SendSMS() {
@@ -175,7 +212,7 @@ class LoadingActivity : AppCompatActivity() {
             })
         }
         AlertDialog.Builder(this).run {
-            setTitle(getString(R.string.client_mode))
+            setTitle(server_client_mode_text)
             setMessage(getString(R.string.ask_ip))
 
             setPositiveButton(getString(R.string.button_connect)) { _: DialogInterface, _: Int ->
@@ -191,11 +228,7 @@ class LoadingActivity : AppCompatActivity() {
                     try {
                         model.startClient(edtBox.text.toString())
                     } catch (_: Exception) {
-                        Toast.makeText(
-                            this@LoadingActivity,
-                            "Server IP not found",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        onErrorShow(getString(R.string.serverIpNotFound))
                         finish()
                     }
                 }
@@ -214,6 +247,12 @@ class LoadingActivity : AppCompatActivity() {
             setView(edtBox)
             create()
         }.show()
+    }
+
+
+
+    fun onErrorShow(msg : String, context: Context  = this@LoadingActivity){
+        errorDialog(server_client_mode_text, msg, context);
     }
 
 }
