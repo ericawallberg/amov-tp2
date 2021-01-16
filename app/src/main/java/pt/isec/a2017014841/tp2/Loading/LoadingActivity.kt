@@ -22,19 +22,28 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
-import kotlinx.android.synthetic.main.activity_loading_server.*
 import pt.isec.a2017014841.tp2.Dados.CLIENT_MODE
 import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
 import pt.isec.a2017014841.tp2.Dados.isServer
 import pt.isec.a2017014841.tp2.Dados.server_client_mode_text
-import pt.isec.a2017014841.tp2.R
-import pt.isec.a2017014841.tp2.helpers.NetUtils.getPublicIp
 
 import android.Manifest.permission.SEND_SMS
 import android.Manifest.permission.READ_SMS
 import android.content.Context
 import android.location.LocationManager
+import com.google.type.DateTime
+import kotlinx.android.synthetic.main.activity_loading_server.*
+import pt.isec.a2017014841.tp2.Dados
+import pt.isec.a2017014841.tp2.R
+import pt.isec.a2017014841.tp2.Dados.actualLocation
 import pt.isec.a2017014841.tp2.Dados.errorDialog
+import pt.isec.a2017014841.tp2.Dados.nomeDaEquipa
+import pt.isec.a2017014841.tp2.Dados.onCreateDados
+import java.time.Instant.now
+import java.time.LocalDate.now
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 class LoadingActivity : AppCompatActivity() {
     val SERVER_PORT = 9999
@@ -45,7 +54,7 @@ class LoadingActivity : AppCompatActivity() {
 
         model = ViewModelProvider(this).get(LoadingViewModel::class.java)
         model.setContext(this)
-        model.errorText.observe(this){
+        model.errorText.observe(this) {
 
         }
         if (model.connectionState.value != LoadingViewModel.ConnectionState.CONNECTION_ESTABLISHED) {
@@ -124,6 +133,13 @@ class LoadingActivity : AppCompatActivity() {
         }
     }
 
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isServer)
+            model.stopServer()
+    }
+
     private fun CreateTeam() {
         //CRIA DOC NA FIREBASE
         //nome do documento: coordenadas iniciais (j1), num jogadores, data/hora
@@ -134,20 +150,29 @@ class LoadingActivity : AppCompatActivity() {
             }
             startActivity(intent)
             */
+
+
+
+        Dados.nomeDaEquipa =
+            actualLocation.latitude.toString() + actualLocation.longitude.toString() + model.nClients.value.toString() + DateTime.getDefaultInstance()
+                .toString()
+        Toast.makeText(this, nomeDaEquipa, Toast.LENGTH_LONG).show()
+        val mapusers = model.getListOfUsers()
+
+        onCreateDados(nomeDaEquipa, mapusers)
+        Toast.makeText(this, "TEAM CREATED", Toast.LENGTH_SHORT).show()
+
     }
 
 
-    fun onLocationChanged(){
+    fun onLocationChanged() {
 
     }
 
-    private fun startGame(){
+    private fun startGame() {
         //TODO: verificar as locs
 
         //fazer o nome
-
-
-
 
 
     }
@@ -248,8 +273,7 @@ class LoadingActivity : AppCompatActivity() {
     }
 
 
-
-    fun onErrorShow(msg : String, context: Context  = this@LoadingActivity){
+    fun onErrorShow(msg: String, context: Context = this@LoadingActivity) {
         errorDialog(server_client_mode_text, msg, context);
     }
 
