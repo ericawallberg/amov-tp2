@@ -1,17 +1,17 @@
 package pt.isec.a2017014841.tp2.Loading
 
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import pt.isec.a2017014841.tp2.Dados
 import pt.isec.a2017014841.tp2.R
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.ServerSocket
 import java.net.Socket
-import java.security.AccessController
-import java.security.AccessController.getContext
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 
 class LoadingViewModel : ViewModel() {
@@ -65,10 +65,9 @@ class LoadingViewModel : ViewModel() {
             return
         connectionState.postValue(ConnectionState.SERVER_CONNECTING)
         thread {
-            serverSocket = ServerSocket(SERVER_PORT)
+            try{serverSocket = ServerSocket(SERVER_PORT)}catch(_:Exception){}
             serverSocket?.apply {
                 try {
-
                     while (state.value != State.GAME_OVER) {
                         addClient(serverSocket!!.accept())
                     }
@@ -90,22 +89,23 @@ class LoadingViewModel : ViewModel() {
         serverSocket = null
     }
 
-//  como nao é aqui que se define o fim do jogo
-//    fun stopGame() {
-//        try {
-//            state.postValue(State.GAME_OVER)
-//            connectionState.postValue(ConnectionState.CONNECTION_ERROR)
-//            socket?.close()
-//            socket = null
-//            for (i in threadComms) {
-//                i.interrupt();
-//            }
-//            threadComms.clear()
-//        } catch (_: Exception) {
-//        }
-//    }
-//
-
+    fun getListOfUsers() : HashMap<Int, String>{
+        val listofusers = HashMap<Int, String>()
+        var userN = 1;
+        serverClientConnections.forEach{
+            val sI = it.socket.getInputStream()
+            val sO = it.socket.getOutputStream()
+            sO.run{
+                write(Dados.nomeDaEquipa.toByteArray())
+            }
+            lateinit var valoresByteArray : ByteArray
+            sI.run {
+                valoresByteArray = this.readBytes()
+            }
+            listofusers[userN++] = String(valoresByteArray)
+        }
+        return listofusers
+    }
 
     fun startClient(serverIP: String, serverPort: Int = SERVER_PORT) {
         if (socket != null || connectionState.value != ConnectionState.SETTING_PARAMETERS)
@@ -165,12 +165,6 @@ class LoadingViewModel : ViewModel() {
                 connectionState.postValue(ConnectionState.CONNECTION_ESTABLISHED)
                 val bufI = newSocket.getInputStream()!!.bufferedReader()
 //                TODO: recebe informações do client
-//                while (state.value != State.GAME_OVER) {
-//                    val message = bufI.readLine()
-//                    val move = message.toIntOrNull() ?: MOVE_NONE
-//                    fazAcao(move)
-//                }
-                nClients.postValue(serverClientConnections.size)
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e("ClientThread", "a apagar elemento da lista")
@@ -186,6 +180,7 @@ class LoadingViewModel : ViewModel() {
             }
         }
         serverClientConnections.add(ServerClientConnection(newSocket, newThread))
+        nClients.postValue(serverClientConnections.size)
         Log.i("conecao do cliente", "cleintes conectados: " + serverClientConnections.size)
     }
 
