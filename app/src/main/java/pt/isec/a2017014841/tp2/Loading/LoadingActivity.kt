@@ -30,6 +30,7 @@ import pt.isec.a2017014841.tp2.Dados.server_client_mode_text
 import android.Manifest.permission.SEND_SMS
 import android.Manifest.permission.READ_SMS
 import android.content.Context
+import android.content.Intent
 import android.location.LocationManager
 import com.google.type.DateTime
 import kotlinx.android.synthetic.main.activity_loading_server.*
@@ -39,10 +40,7 @@ import pt.isec.a2017014841.tp2.Dados.actualLocation
 import pt.isec.a2017014841.tp2.Dados.errorDialog
 import pt.isec.a2017014841.tp2.Dados.nomeDaEquipa
 import pt.isec.a2017014841.tp2.Dados.onCreateDados
-import java.time.Instant.now
-import java.time.LocalDate.now
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import pt.isec.a2017014841.tp2.Game.GameActivity
 import java.util.*
 
 class LoadingActivity : AppCompatActivity() {
@@ -157,10 +155,14 @@ class LoadingActivity : AppCompatActivity() {
             actualLocation.latitude.toString() + actualLocation.longitude.toString() + model.nClients.value.toString() + DateTime.getDefaultInstance()
                 .toString()
         Toast.makeText(this, nomeDaEquipa, Toast.LENGTH_LONG).show()
-        val mapusers = model.getListOfUsers()
 
+        val mapusers = model.getListOfUsers()
+        mapusers[1]= Dados.locationToString(actualLocation)
         onCreateDados(nomeDaEquipa, mapusers)
         Toast.makeText(this, "TEAM CREATED", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, GameActivity::class.java)
+        startActivity(intent)
+
 
     }
 
@@ -237,7 +239,6 @@ class LoadingActivity : AppCompatActivity() {
         AlertDialog.Builder(this).run {
             setTitle(server_client_mode_text)
             setMessage(getString(R.string.ask_ip))
-
             setPositiveButton(getString(R.string.button_connect)) { _: DialogInterface, _: Int ->
                 val strIP = edtBox.text.toString()
                 if (strIP.isEmpty() || !Patterns.IP_ADDRESS.matcher(strIP).matches()) {
@@ -272,9 +273,8 @@ class LoadingActivity : AppCompatActivity() {
         }.show()
     }
 
-
     fun onErrorShow(msg: String, context: Context = this@LoadingActivity) {
-        errorDialog(server_client_mode_text, msg, context);
+        errorDialog(server_client_mode_text, msg, context)
     }
 
 }

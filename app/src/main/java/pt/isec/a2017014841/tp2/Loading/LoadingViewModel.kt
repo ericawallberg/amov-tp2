@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import pt.isec.a2017014841.tp2.Dados
+import pt.isec.a2017014841.tp2.Dados.actualLocation
+import pt.isec.a2017014841.tp2.Dados.userNumber
 import pt.isec.a2017014841.tp2.R
 import java.io.InputStream
 import java.io.OutputStream
@@ -91,7 +93,7 @@ class LoadingViewModel : ViewModel() {
 
     fun getListOfUsers() : HashMap<Int, String>{
         val listofusers = HashMap<Int, String>()
-        var userN = 1;
+        var userN = 2;
         serverClientConnections.forEach{
             val sI = it.socket.getInputStream()
             val sO = it.socket.getOutputStream()
@@ -137,13 +139,15 @@ class LoadingViewModel : ViewModel() {
             try {
                 if (socketI == null)
                     return@thread
-
                 connectionState.postValue(ConnectionState.CONNECTION_ESTABLISHED)
                 val bufI = socketI!!.bufferedReader()
                 while (state.value != State.GAME_OVER) {
                     val message = bufI.readLine()
                     val move = message.toIntOrNull() ?: MOVE_NONE
-                    //fazAcao(move)
+                    if(move > 0){
+                        userNumber = move
+                        socketO!!.write(Dados.locationToString(actualLocation).toByteArray())
+                    }
                 }
             } catch (_: Exception) {
                 errorText.postValue(thisContext.getString(R.string.LostConnectioWithServer))
