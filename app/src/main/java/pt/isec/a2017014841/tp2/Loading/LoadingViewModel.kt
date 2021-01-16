@@ -3,7 +3,6 @@ package pt.isec.a2017014841.tp2.Loading
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import pt.isec.a2017014841.tp2.R
@@ -58,7 +57,6 @@ class LoadingViewModel : ViewModel() {
     val nClients = MutableLiveData(0)
 
     //cria o server
-    @RequiresApi(Build.VERSION_CODES.N)
     fun startServer() {
         if (serverSocket != null ||
             serverClientConnections.isNotEmpty() ||
@@ -159,7 +157,6 @@ class LoadingViewModel : ViewModel() {
     /**
      * Aceita connecao de um novo cliente
      */
-    @RequiresApi(Build.VERSION_CODES.N)
     fun addClient(newSocket: Socket) {
         val newThread = thread {
             try {
@@ -177,8 +174,14 @@ class LoadingViewModel : ViewModel() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e("ClientThread", "a apagar elemento da lista")
-                
-                serverClientConnections.removeIf{it.socket == socket}
+                var nclient = 0
+                serverClientConnections.forEach {
+                    if(it.socket == socket ){
+                        serverClientConnections.remove(it)
+                    }
+                    nclient++
+                }
+
                 errorText.postValue(thisContext.getString(R.string.LostConnectionServerWithClient))
             }
         }
