@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+    <LinearLayout android:id="@+id/activitydb_layout"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical">
+        <Button
+            android:text="criabase"
+            android:id="@+id/criarbase_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            /> <Button
+            android:text="updatebase"
+            android:id="@+id/updatebase_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            /> <Button
+            android:text="deletebase"
+            android:id="@+id/deletebase_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </LinearLayout>
+</ScrollView>
+
