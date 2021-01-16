@@ -257,13 +257,6 @@ class LoadingActivity : AppCompatActivity() {
                     }
                 }
             }
-//            setNeutralButton(getString(R.string.btn_emulator)) { _: DialogInterface, _: Int ->
-//                model.startClient("10.0.2.2", SERVER_PORT-1)
-//                // Add port redirect on the Server Emulator:
-//                // telnet localhost <5554|5556|5558|...>
-//                // auth <key>
-//                // redir add tcp:9998:9999
-//            }
             setNegativeButton(getString(R.string.button_cancel)) { _: DialogInterface, _: Int ->
                 finish()
             }
