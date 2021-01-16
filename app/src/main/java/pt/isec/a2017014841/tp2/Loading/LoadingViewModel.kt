@@ -1,18 +1,25 @@
 package pt.isec.a2017014841.tp2.Loading
 
+import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.android.synthetic.main.activity_loading_server.*
 import pt.isec.a2017014841.tp2.R
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.ServerSocket
 import java.net.Socket
+import java.security.AccessController
+import java.security.AccessController.getContext
 import kotlin.concurrent.thread
 
 class LoadingViewModel : ViewModel() {
-
+    lateinit var thisContext : Context
+    fun setContext(context:Context){
+        thisContext = context
+    }
 
     val SERVER_PORT = 9999
     val MOVE_NONE = 0
@@ -43,7 +50,7 @@ class LoadingViewModel : ViewModel() {
     /**
      * dados de uma ligacao de um servidor para um cliente
      */
-    data class ServerClientConnection(private val socket: Socket, private val threadComm: Thread);
+    data class ServerClientConnection(val socket: Socket, val threadComm: Thread);
 
     val serverClientConnections = mutableListOf<ServerClientConnection>()
 
@@ -51,6 +58,7 @@ class LoadingViewModel : ViewModel() {
     val nClients = MutableLiveData(0)
 
     //cria o server
+    @RequiresApi(Build.VERSION_CODES.N)
     fun startServer() {
         if (serverSocket != null ||
             serverClientConnections.isNotEmpty() ||
@@ -110,11 +118,11 @@ class LoadingViewModel : ViewModel() {
                 val newsocket = Socket(serverIP, serverPort)
                 //TODO: enviar as coordenadas ao server e verificar se estao a menos de 100m
                 startComm(newsocket)
-
             } catch (e: Exception) {
                 Log.e("começar cliente", e.stackTrace.toString());
                 connectionState.postValue(ConnectionState.CONNECTION_ERROR)
                 //TODO: dar trigger a algo para que na view dé um aviso de erro
+                errorText.postValue(thisContext.getString(R.string.CantConnectToServer))
             }
         }
     }
@@ -139,18 +147,21 @@ class LoadingViewModel : ViewModel() {
                     val move = message.toIntOrNull() ?: MOVE_NONE
                     //fazAcao(move)
                 }
-
             } catch (_: Exception) {
+                errorText.postValue(thisContext.getString(R.string.LostConnectioWithServer))
             }
         }))
     }
 
+    //mensagem de erro vindo da view model
+    var errorText = MutableLiveData<String>("")
+
     /**
      * Aceita connecao de um novo cliente
      */
+    @RequiresApi(Build.VERSION_CODES.N)
     fun addClient(newSocket: Socket) {
-
-        serverClientConnections.add(ServerClientConnection(newSocket, thread {
+        val newThread = thread {
             try {
                 if (newSocket.getInputStream() == null)
                     return@thread
@@ -162,13 +173,18 @@ class LoadingViewModel : ViewModel() {
 //                    val move = message.toIntOrNull() ?: MOVE_NONE
 //                    fazAcao(move)
 //                }
-
-            } catch ( e : Exception) {
+                nClients.postValue(serverClientConnections.size)
+            } catch (e: Exception) {
                 e.printStackTrace()
+                Log.e("ClientThread", "a apagar elemento da lista")
+                
+                serverClientConnections.removeIf{it.socket == socket}
+                errorText.postValue(thisContext.getString(R.string.LostConnectionServerWithClient))
             }
-        }))
-        Log.i("conecao do cliente","cleintes conectados: "+ serverClientConnections.size)
-        nClients.postValue(serverClientConnections.size)
+        }
+        serverClientConnections.add(ServerClientConnection(newSocket, newThread))
+        Log.i("conecao do cliente", "cleintes conectados: " + serverClientConnections.size)
     }
+
 
 }
