@@ -157,7 +157,7 @@ class LoadingActivity : AppCompatActivity() {
         Toast.makeText(this, nomeDaEquipa, Toast.LENGTH_LONG).show()
 
         val mapusers = model.getListOfUsers()
-        mapusers[1]= Dados.locationToString(actualLocation)
+        mapusers[1.toString()]= Dados.locationToString(actualLocation)
         onCreateDados(nomeDaEquipa, mapusers)
         Toast.makeText(this, "TEAM CREATED", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, GameActivity::class.java)
