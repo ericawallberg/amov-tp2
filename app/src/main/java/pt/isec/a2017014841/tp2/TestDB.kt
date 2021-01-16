@@ -19,16 +19,13 @@ class TestDB : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test_d_b)
-
     //        (1..100)
 //            .forEach { i ->
 //                textview = TextView(this)
 //                textview.setText("texto $i")
 //                activitydb_layout.addView(textview)
 //            }
-
     }
-
 
     override fun onStart() {
         super.onStart()

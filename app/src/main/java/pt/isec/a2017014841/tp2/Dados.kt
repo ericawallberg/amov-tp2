@@ -16,6 +16,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.util.*
+import kotlin.collections.HashMap
 
 internal object Dados : LocationListener {
     const val MIN_USERS = 3
@@ -35,7 +37,7 @@ internal object Dados : LocationListener {
     }
 
     var teamName: String = ""
-    fun onCreateDados(teamName: String, localizations: HashMap<Int, Location>) {
+    fun onCreateDados(teamName: String, localizations: HashMap<Int, String>) {
         val db = getDb()
         //nome da team
 //        As coordenadas iniciais (jogador 1), o
@@ -83,10 +85,21 @@ internal object Dados : LocationListener {
     lateinit var actualLocation: Location
     override fun onLocationChanged(location: Location) {
         actualLocation = location
-        location.toString()
-
     }
 //    fun onDeleteDados() {
 //        db.collection("Amov").document("e").delete()
 //    }
+
+    data class LonLat(var lon : Double,var lat : Double)
+
+    fun stringToLongitureLatitude(valoresString : String): LonLat {
+        val valoresTokenizer = StringTokenizer(valoresString)
+        val lat = valoresTokenizer.nextToken()
+        val log = valoresTokenizer.nextToken()
+        return LonLat(log.toDouble(), lat.toDouble())
+    }
+
+    fun locationToString(location : Location): String{
+        return location.longitude.toString() + " " + location.latitude.toString()
+    }
 }
