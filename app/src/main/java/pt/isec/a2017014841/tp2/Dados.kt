@@ -19,7 +19,7 @@ import com.google.firebase.ktx.Firebase
 import java.util.*
 import kotlin.collections.HashMap
 
-internal object Dados : LocationListener {
+internal object Dados  {
     const val MIN_USERS = 3
     const val CLIENT_MODE = 1
     const val SERVER_MODE = 0
@@ -27,6 +27,7 @@ internal object Dados : LocationListener {
     var nomeDaEquipa = ""
     val JogosCollection = "Jogos"
     var userNumber = 1
+    lateinit var actualLocation: Location
 
     val PERMISSION_REQUEST_CODE = 100
     var isServer = false;
@@ -38,7 +39,7 @@ internal object Dados : LocationListener {
     }
 
     var teamName: String = ""
-    fun onCreateDados(teamName: String, localizations: HashMap<Int, String>) {
+    fun onCreateDados(teamName: String, localizations: HashMap<String, String>) {
         val db = getDb()
         //nome da team
 //        As coordenadas iniciais (jogador 1), o
@@ -48,20 +49,7 @@ internal object Dados : LocationListener {
         db.collection(JogosCollection).document(teamName).set(localizations)
     }
 
-    fun activateLocationlistener(context:Context) {
-        val lm = context.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 5f, this)
-    }
+
 
     fun onUpdateDados() {
         val db = Firebase.firestore
@@ -83,10 +71,7 @@ internal object Dados : LocationListener {
         }.show()
     }
 
-    lateinit var actualLocation: Location
-    override fun onLocationChanged(location: Location) {
-        actualLocation = location
-    }
+
 //    fun onDeleteDados() {
 //        db.collection("Amov").document("e").delete()
 //    }

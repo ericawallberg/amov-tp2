@@ -91,8 +91,8 @@ class LoadingViewModel : ViewModel() {
         serverSocket = null
     }
 
-    fun getListOfUsers() : HashMap<Int, String>{
-        val listofusers = HashMap<Int, String>()
+    fun getListOfUsers() : HashMap<String, String>{
+        val listofusers = HashMap<String, String>()
         var userN = 2;
         serverClientConnections.forEach{
             val sI = it.socket.getInputStream()
@@ -104,7 +104,7 @@ class LoadingViewModel : ViewModel() {
             sI.run {
                 valoresByteArray = this.readBytes()
             }
-            listofusers[userN++] = String(valoresByteArray)
+            listofusers[userN++.toString()] = String(valoresByteArray)
         }
         return listofusers
     }
