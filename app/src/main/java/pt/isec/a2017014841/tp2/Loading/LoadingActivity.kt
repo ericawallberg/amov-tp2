@@ -102,7 +102,7 @@ class LoadingActivity : AppCompatActivity() {
             (ip shr 24) and 0xff
         )
 
-        tvserver_ip.text = String.format("Server IP: %s", getPublicIp())
+        tvserver_ip.text = String.format("Server IP: %s", strIPAddress)
 
         btsend_sms.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -134,11 +134,9 @@ class LoadingActivity : AppCompatActivity() {
             }
             startActivity(intent)
             */
-
-        val lm = getSystemService(LOCATION_SERVICE) as LocationManager
-
-//        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,500L, 5, onLocationChanged())
     }
+
+
     fun onLocationChanged(){
 
     }
