@@ -17,6 +17,7 @@ import pt.isec.a2017014841.tp2.Dados.CLIENT_MODE
 import pt.isec.a2017014841.tp2.Dados.PERMISSION_REQUEST_CODE
 import pt.isec.a2017014841.tp2.Dados.RC_SIGN_IN
 import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
+import pt.isec.a2017014841.tp2.Dados.errorDialog
 import pt.isec.a2017014841.tp2.Loading.LoadingActivity
 import pt.isec.a2017014841.tp2.helpers.NetUtils
 
@@ -31,20 +32,18 @@ class MainActivity : AppCompatActivity() {
                         ActivityCompat.checkSelfPermission(this, INTERNET) != PackageManager.PERMISSION_GRANTED &&
                         ActivityCompat.checkSelfPermission(this, ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED &&
                         ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
+            errorDialog("Ask Permissions", "Accept permissions for the app to work", this)
         }
-
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        //setup permissions
         while (ActivityCompat.checkSelfPermission(this, ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, INTERNET) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(READ_SMS, READ_PHONE_NUMBERS, READ_PHONE_STATE, ACCESS_COARSE_LOCATION), PERMISSION_REQUEST_CODE)}
-
         if (mAuth == null)
             mAuth = FirebaseAuth.getInstance()
         //verifica se tem rede
