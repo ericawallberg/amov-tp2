@@ -26,6 +26,7 @@ internal object Dados : LocationListener {
     const val RC_SIGN_IN = 0
     var nomeDaEquipa = ""
     val JogosCollection = "Jogos"
+    var userNumber = 1
 
     val PERMISSION_REQUEST_CODE = 100
     var isServer = false;
