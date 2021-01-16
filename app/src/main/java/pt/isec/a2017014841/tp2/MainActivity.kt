@@ -1,30 +1,50 @@
 package pt.isec.a2017014841.tp2
 
+import android.Manifest.permission.*
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import pt.isec.a2017014841.tp2.Dados.CLIENT_MODE
+import pt.isec.a2017014841.tp2.Dados.PERMISSION_REQUEST_CODE
 import pt.isec.a2017014841.tp2.Dados.RC_SIGN_IN
 import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
-import pt.isec.a2017014841.tp2.Dados.mAuth
 import pt.isec.a2017014841.tp2.Loading.LoadingActivity
 import pt.isec.a2017014841.tp2.helpers.NetUtils
 
 
+
 class MainActivity : AppCompatActivity() {
 
-
     private val TEST_DB = -1;
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(ActivityCompat.checkSelfPermission(this, ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(this, INTERNET) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(this, ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+        }
+
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        while (ActivityCompat.checkSelfPermission(this, ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, INTERNET) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(READ_SMS, READ_PHONE_NUMBERS, READ_PHONE_STATE, ACCESS_COARSE_LOCATION), PERMISSION_REQUEST_CODE)}
+
         if (mAuth == null)
             mAuth = FirebaseAuth.getInstance()
         //verifica se tem rede
@@ -48,33 +68,33 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    var mAuth: FirebaseAuth? = null
     override fun onStart() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = mAuth!!.currentUser
         if (currentUser == null) {
-            val TAG = "Authenticação Anonima"
+            val tag = "Authenticação Anonima"
             mAuth?.signInAnonymously()
-                ?.addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInAnonymously:success")
-                        val user = mAuth?.currentUser
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInAnonymously:failure", task.exception)
-                        Toast.makeText(
-                            baseContext, "Authentication failed.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    ?.addOnCompleteListener(this) { task ->
+                        val CollectionGames = "Jogos"
+                        if (task.isSuccessful) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(tag, "signInAnonymously:success")
+                            val user = mAuth?.currentUser
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(tag, "signInAnonymously:failure", task.exception)
+                            Toast.makeText(
+                                    baseContext, "Authentication failed.",
+                                    Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                }
-            if (mAuth?.currentUser == null)
-                Toast.makeText(baseContext, "There is no User.", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(baseContext, "User logged.", Toast.LENGTH_SHORT).show()
         }
 
+        if (currentUser != null)
+            Toast.makeText(baseContext, "User logged.", Toast.LENGTH_SHORT).show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
