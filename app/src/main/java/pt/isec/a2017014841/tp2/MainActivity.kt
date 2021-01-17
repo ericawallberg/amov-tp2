@@ -64,29 +64,11 @@ class MainActivity : AppCompatActivity(), LocationListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        if (mAuth == null)
-            mAuth = FirebaseAuth.getInstance()
-        //verifica se tem rede
-        if (!NetUtils.verifyNetworkStateV2(this)) {
-            Toast.makeText(this, getString(R.string.noNetwork), Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-
-        findViewById<Button>(R.id.btnew_game).setOnClickListener {
-            startGame(SERVER_MODE)
-        }
-
-        findViewById<Button>(R.id.btjoin_game).setOnClickListener {
-            startGame(CLIENT_MODE)
-        }
-
-        testdb.setOnClickListener {
-            startActivityForResult(Intent(this, GameActivity::class.java), TEST_DB)
-        }
-
         //setup permissions
+
+
+        setContentView(R.layout.activity_main)
+
         while (ActivityCompat.checkSelfPermission(
                 this,
                 ACCESS_NETWORK_STATE
@@ -121,6 +103,28 @@ class MainActivity : AppCompatActivity(), LocationListener {
             )
         }
 
+        if (mAuth == null)
+            mAuth = FirebaseAuth.getInstance()
+        //verifica se tem rede
+        if (!NetUtils.verifyNetworkStateV2(this)) {
+            Toast.makeText(this, getString(R.string.noNetwork), Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        findViewById<Button>(R.id.btnew_game).setOnClickListener {
+            startGame(SERVER_MODE)
+        }
+
+        findViewById<Button>(R.id.btjoin_game).setOnClickListener {
+            startGame(CLIENT_MODE)
+        }
+
+        testdb.setOnClickListener {
+            startActivityForResult(Intent(this, GameActivity::class.java), TEST_DB)
+        }
+
+
     }
 
     var mAuth: FirebaseAuth? = null
@@ -153,6 +157,8 @@ class MainActivity : AppCompatActivity(), LocationListener {
             Toast.makeText(baseContext, "User logged.", Toast.LENGTH_SHORT).show()
             activateLocationlistener()
         }
+
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -181,7 +187,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
 
     fun activateLocationlistener() {
         val lm = getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
-        if (ActivityCompat.checkSelfPermission(
+        while (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -189,7 +195,6 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(
@@ -198,9 +203,6 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 ),
                 PERMISSION_REQUEST_CODE
             )
-
-
-            return
         }
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 5f, this)
     }
