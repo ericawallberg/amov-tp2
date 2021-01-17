@@ -3,7 +3,6 @@ package pt.isec.a2017014841.tp2.Loading
 import android.Manifest
 import android.content.DialogInterface
 import android.content.pm.PackageManager
-import android.location.Location
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
@@ -14,7 +13,6 @@ import android.text.InputType.TYPE_CLASS_NUMBER
 import android.text.Spanned
 import android.util.Log
 import android.util.Patterns
-import android.widget.Toast.makeText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -25,13 +23,10 @@ import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
 import pt.isec.a2017014841.tp2.Dados.isServer
 import pt.isec.a2017014841.tp2.Dados.server_client_mode_text
 
-import android.Manifest.permission.SEND_SMS
-import android.Manifest.permission.READ_SMS
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.location.LocationManager
 import android.view.Gravity
 import android.view.View
 import android.widget.*
@@ -43,7 +38,7 @@ import pt.isec.a2017014841.tp2.Dados.actualLocation
 import pt.isec.a2017014841.tp2.Dados.errorDialog
 import pt.isec.a2017014841.tp2.Dados.nomeDaEquipa
 import pt.isec.a2017014841.tp2.Dados.onCreateDados
-import pt.isec.a2017014841.tp2.Game.GameActivity
+import pt.isec.a2017014841.tp2.Game.GameActivityFailed
 import java.util.*
 
 class LoadingActivity : AppCompatActivity() {
@@ -172,7 +167,7 @@ class LoadingActivity : AppCompatActivity() {
     private fun startGame() {
         //TODO: verificar as locs
 
-        val intent = Intent(this, GameActivity::class.java)
+        val intent = Intent(this, GameActivityFailed::class.java)
         startActivity(intent)
 
     }
