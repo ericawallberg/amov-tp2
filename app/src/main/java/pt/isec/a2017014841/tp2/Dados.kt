@@ -27,7 +27,10 @@ internal object Dados  {
     var nomeDaEquipa = ""
     val JogosCollection = "Jogos"
     var userNumber = 1
-    lateinit var actualLocation: Location
+    var actualLocation: Location = Location("dummylocation").apply {
+        longitude = 20.0
+        latitude = 30.0
+    }
 
     val PERMISSION_REQUEST_CODE = 100
     var isServer = false;
