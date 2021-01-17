@@ -104,13 +104,14 @@ class LoadingViewModel : ViewModel() {
                 val sO = it.socket.getOutputStream()
 
                 sO.run {
-                    write(userN.toString().to)
-                    write(Dados.nomeDaEquipa.toByteArray())
+                    write((userN.toString()+"\n").toByteArray())
+                    write((Dados.nomeDaEquipa+"\n").toByteArray())
                 }
                 lateinit var valoresByteArray: ByteArray
                 sI.run {
                     valoresByteArray = this.readBytes()
                 }
+                //se nao ouve exceptions incrementar o user
                 listofusers[userN++.toString()] = String(valoresByteArray)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -120,15 +121,35 @@ class LoadingViewModel : ViewModel() {
         return listofusers
     }
 
+    /**
+     * Começa o client
+     */
     fun startClient(serverIP: String, serverPort: Int = SERVER_PORT) {
         if (socket != null || connectionState.value != ConnectionState.SETTING_PARAMETERS)
             return
         thread {
             connectionState.postValue(ConnectionState.CLIENT_CONNECTING)
             try {
-                val newsocket = Socket(serverIP, serverPort)
+                socket = Socket(serverIP, serverPort)
                 //TODO: enviar as coordenadas ao server e verificar se estao a menos de 100m
-                startComm(newsocket)
+//                startComm(newsocket)
+                thread {
+                    try {
+                        if (socketI == null)
+                            return@thread
+                        connectionState.postValue(ConnectionState.CONNECTION_ESTABLISHED)
+                        val bufI = socketI!!.bufferedReader()
+                        while (state.value != State.GAME_OVER) {
+                            Dados.userNumber = bufI.readLine().toInt()
+                            if (userNumber > 0) {
+                                nomeDaEquipa = bufI.readLine()
+                                socketO!!.write(Dados.locationToString(actualLocation).toByteArray())
+                            }
+                        }
+                    } catch (_: Exception) {
+                        errorText.postValue(thisContext.getString(R.string.LostConnectioWithServer))
+                    }
+                }
             } catch (e: Exception) {
                 Log.e("começar cliente", e.stackTrace.toString());
                 connectionState.postValue(ConnectionState.CONNECTION_ERROR)
@@ -138,62 +159,28 @@ class LoadingViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Começa uma conecao com client/server
-     */
-    private fun startComm(newSocket: Socket) {
-        //condicao para nao fazer conecao
-        //    return
-
-        socket = newSocket
-        serverClientConnections.add(ServerClientConnection(newSocket, thread {
-            try {
-                if (socketI == null)
-                    return@thread
-                connectionState.postValue(ConnectionState.CONNECTION_ESTABLISHED)
-                val bufI = socketI!!.bufferedReader()
-                while (state.value != State.GAME_OVER) {
-                    Dados.userNumber = bufI.readLine().toInt()
-                    if (userNumber > 0) {
-                        nomeDaEquipa = bufI.readLine()
-                        if (move > 0) {
-                            userNumber = move
-                            socketO!!.write(Dados.locationToString(actualLocation).toByteArray())
-                        }
-                    }
-
-                }
-            } catch (_: Exception) {
-                errorText.postValue(thisContext.getString(R.string.LostConnectioWithServer))
-            }
-        }))
-    }
-
     //mensagem de erro vindo da view model
     var errorText = MutableLiveData<String>("")
 
     /**
-     * Aceita connecao de um novo cliente
+     * Aceita connecao de um novo cliente no servidor
      */
     fun addClient(newSocket: Socket) {
         val newThread = thread {
             try {
                 if (newSocket.getInputStream() == null)
-                    return@thread
+                    throw Exception()
                 connectionState.postValue(ConnectionState.CONNECTION_ESTABLISHED)
-                val bufI = newSocket.getInputStream()!!.bufferedReader()
+//                val bufI = newSocket.getInputStream()!!.bufferedReader()
 //                TODO: recebe informações do client
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e("ClientThread", "a apagar elemento da lista")
-                var nclient = 0
                 serverClientConnections.forEach {
                     if (it.socket == socket) {
                         serverClientConnections.remove(it)
                     }
-                    nclient++
                 }
-
                 errorText.postValue(thisContext.getString(R.string.LostConnectionServerWithClient))
             }
         }

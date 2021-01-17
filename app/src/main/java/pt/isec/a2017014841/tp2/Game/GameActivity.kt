@@ -21,6 +21,7 @@ import java.lang.Math.toRadians
 import java.lang.Thread.sleep
 import kotlin.math.tan
 import pt.isec.a2017014841.tp2.R
+import kotlin.math.pow
 
 data class ClientesInfo(val nome: String, val coordenadas: Location)
 class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -227,8 +228,8 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun checkVictory(){
-        val limsup = arrayDist[0]+0.1
-        val liminf = arrayDist[0]-0.1
+        val limsup = arrayDist[0]+0.5
+        val liminf = arrayDist[0]-0.5
         var count : Int =0
         for(i in 0..arrayDist.size-1){
             if(arrayDist[i]>=liminf && arrayDist[i]<=limsup )
@@ -270,7 +271,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun calculaArea(): Double{
-        return (1/2)*getPerimeter()*getApothem()
+        return ((arrayDist.get(0).pow(2))*arrayDist.size)/4* tan(180/arrayDist.size as Double)
     }
 
     private fun getApothem() : Double{
