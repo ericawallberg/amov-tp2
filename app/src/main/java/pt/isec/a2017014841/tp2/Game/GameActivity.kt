@@ -16,14 +16,12 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.common.io.Files.map
-import java.lang.Math.toDegrees
-import java.lang.Math.toRadians
 import java.lang.Thread.sleep
 import kotlin.math.tan
 import pt.isec.a2017014841.tp2.R
+import java.lang.Math.*
 import kotlin.math.pow
 
-data class ClientesInfo(val nome: String, val coordenadas: Location)
 class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private final val START_TIME_IN_MILLIS : Long = 600000
 
@@ -68,7 +66,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_game)
+        setContentView(R.layout.activity_new_game)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -120,6 +118,10 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         distancesAndAngles()
         checkVictory()
     }
+
+  //  private fun isOutOfBounds():Boolean{
+
+    //}
 
     private fun buildShapes() {
         for(i in 0..arrayList.size-1)
@@ -271,7 +273,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun calculaArea(): Double{
-        return ((arrayDist.get(0).pow(2))*arrayDist.size)/4* tan(180/arrayDist.size as Double)
+        return (((arrayDist.get(0).pow(2))*arrayDist.size)/4* tan(180/arrayDist.size as Double))
     }
 
     private fun getApothem() : Double{

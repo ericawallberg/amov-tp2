@@ -3,6 +3,7 @@ package pt.isec.a2017014841.tp2.Loading
 import android.Manifest
 import android.content.DialogInterface
 import android.content.pm.PackageManager
+import android.location.Location
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +14,7 @@ import android.text.InputType.TYPE_CLASS_NUMBER
 import android.text.Spanned
 import android.util.Log
 import android.util.Patterns
+import android.widget.Toast.makeText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -23,12 +25,13 @@ import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
 import pt.isec.a2017014841.tp2.Dados.isServer
 import pt.isec.a2017014841.tp2.Dados.server_client_mode_text
 
+import android.Manifest.permission.SEND_SMS
+import android.Manifest.permission.READ_SMS
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.location.Location
-import android.location.LocationListener
+import android.location.LocationManager
 import android.view.Gravity
 import android.view.View
 import android.widget.*
@@ -43,7 +46,7 @@ import pt.isec.a2017014841.tp2.Dados.onCreateDados
 import pt.isec.a2017014841.tp2.Game.GameActivity
 import java.util.*
 
-class LoadingActivity : AppCompatActivity(), LocationListener {
+class LoadingActivity : AppCompatActivity() {
     val SERVER_PORT = 9999
     lateinit var strIPAddress: String
     lateinit var model: LoadingViewModel
@@ -54,39 +57,7 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
         model = ViewModelProvider(this).get(LoadingViewModel::class.java)
         model.setContext(this)
         model.errorText.observe(this) {
-            while (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_NETWORK_STATE
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.INTERNET
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_WIFI_STATE
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(
-                        Manifest.permission.ACCESS_WIFI_STATE,
-                        Manifest.permission.ACCESS_NETWORK_STATE,
-                        Manifest.permission.INTERNET,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ),
-                    Dados.PERMISSION_REQUEST_CODE
-                )
-            }
+
         }
         if (model.connectionState.value != LoadingViewModel.ConnectionState.CONNECTION_ESTABLISHED) {
             when (intent.getIntExtra("mode", SERVER_MODE)) {
@@ -131,7 +102,6 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
 
         model.startServer()
 
-        getString(R.string.sasdf)
         val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
         val ip = wifiManager.connectionInfo.ipAddress
         strIPAddress = String.format(
@@ -187,19 +157,15 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
         Toast.makeText(this, nomeDaEquipa, Toast.LENGTH_LONG).show()
 
         val mapusers = model.getListOfUsers()
-        if(mapusers.size < 2){
-            onErrorShow("Clientes a menos", this)
-        }
-
         mapusers[1.toString()]= Dados.locationToString(actualLocation)
         onCreateDados(nomeDaEquipa, mapusers)
         Toast.makeText(this, "TEAM CREATED", Toast.LENGTH_SHORT).show()
        startGame()
     }
 
-    override fun onLocationChanged(location: Location) {
-        actualLocation = location
-        Toast.makeText(this, Dados.locationToString(actualLocation),Toast.LENGTH_LONG).show()
+
+    fun onLocationChanged() {
+
     }
 
     private fun startGame() {
@@ -299,7 +265,7 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
     }
 
     fun waitForServer(){
-        setContentView(R.layout.wait_for_server)
+        setContentView(R.layout.activity_loading_server)
     }
 
     fun onErrorShow(msg: String, context: Context = this@LoadingActivity) {
