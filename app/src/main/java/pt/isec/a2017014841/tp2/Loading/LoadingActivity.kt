@@ -1,8 +1,12 @@
 package pt.isec.a2017014841.tp2.Loading
 
 import android.Manifest
+import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
@@ -11,36 +15,26 @@ import android.text.InputFilter
 import android.text.InputType
 import android.text.InputType.TYPE_CLASS_NUMBER
 import android.text.Spanned
+import android.text.format.Time
 import android.util.Log
 import android.util.Patterns
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
-import pt.isec.a2017014841.tp2.Dados.CLIENT_MODE
-import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
-import pt.isec.a2017014841.tp2.Dados.isServer
-import pt.isec.a2017014841.tp2.Dados.server_client_mode_text
-
-import android.content.Context
-import android.content.Intent
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.location.Location
-import android.location.LocationListener
-import android.view.Gravity
-import android.view.View
-import android.widget.*
-import com.google.type.DateTime
 import kotlinx.android.synthetic.main.activity_loading_server.*
 import pt.isec.a2017014841.tp2.Dados
-import pt.isec.a2017014841.tp2.R
+import pt.isec.a2017014841.tp2.Dados.CLIENT_MODE
+import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
 import pt.isec.a2017014841.tp2.Dados.actualLocation
 import pt.isec.a2017014841.tp2.Dados.errorDialog
+import pt.isec.a2017014841.tp2.Dados.isServer
 import pt.isec.a2017014841.tp2.Dados.nomeDaEquipa
-import pt.isec.a2017014841.tp2.Dados.onCreateDados
+import pt.isec.a2017014841.tp2.Dados.server_client_mode_text
 import pt.isec.a2017014841.tp2.Game.GameActivity
+import pt.isec.a2017014841.tp2.R
 import java.util.*
 
 class LoadingActivity : AppCompatActivity(), LocationListener {
@@ -126,12 +120,8 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
                 btcreate_team.isEnabled = false
                 btcreate_team.isClickable = false
             }
-
         }
 
-        model.startServer()
-
-        getString(R.string.sasdf)
         val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
         val ip = wifiManager.connectionInfo.ipAddress
         strIPAddress = String.format(
@@ -162,44 +152,45 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
                 }
             }
         }
+
+        model.startServer()
+
+
     }
 
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (isServer)
-            model.stopServer()
-    }
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        if (isServer) {
+//            model.serverThread?.interrupt()
+//            model.serverThread!! = null
+//            model.stopServer()
+//        }
+//    }
 
     private fun CreateTeam() {
-        //CRIA DOC NA FIREBASE
-        //nome do documento: coordenadas iniciais (j1), num jogadores, data/hora
-        //MANDA PARA A GAMEACTIVITY
-        /*
-            val intent = Intent(this, GameActivity::class.java).apply {
-                putExtra("mode", CLIENT_MODE)
-            }
-            startActivity(intent)
-            */
-        Dados.nomeDaEquipa =
-            actualLocation.latitude.toString() + actualLocation.longitude.toString() + model.nClients.value.toString() + DateTime.getDefaultInstance()
-                .toString()
+        val now = Time()
+        now.setToNow()
+        nomeDaEquipa =
+            actualLocation.latitude.toString() + " " +
+                    actualLocation.longitude.toString() + " " +
+                    model.nClients.value.toString() + " " +
+                    now.year + "/" + now.month + "/" + now.monthDay + " " +
+                    now.hour + ":" + now.minute + ":" + now.second
+
+
         Toast.makeText(this, nomeDaEquipa, Toast.LENGTH_LONG).show()
+        model.getListOfUsers()
 
-        val mapusers = model.getListOfUsers()
-        if(mapusers.size < 2){
-            onErrorShow("Clientes a menos", this)
-        }
+        // mapusers[1.toString()]= Dados.locationToString(actualLocation)
 
-        mapusers[1.toString()]= Dados.locationToString(actualLocation)
-        onCreateDados(nomeDaEquipa, mapusers)
         Toast.makeText(this, "TEAM CREATED", Toast.LENGTH_SHORT).show()
-       startGame()
+        startGame()
     }
 
     override fun onLocationChanged(location: Location) {
         actualLocation = location
-        Toast.makeText(this, Dados.locationToString(actualLocation),Toast.LENGTH_LONG).show()
+        Toast.makeText(this, Dados.locationToString(actualLocation), Toast.LENGTH_LONG).show()
     }
 
     private fun startGame() {
@@ -209,6 +200,7 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
         startActivity(intent)
 
     }
+
 
     private fun SendSMS() {
         val phoneNo = EditText(this).apply {
@@ -248,6 +240,27 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
 
 
     private fun startAsClient() {
+        model.clientSucess.observe(this) {
+         if(model.clientSucess.value == true){
+             model.clientSucess.value = false
+             startGame()
+         }
+        }
+
+        model.clientError.observe(this) {
+            if(model.clientError.value == true) {
+                model.clientError.value = false
+                AlertDialog.Builder(this).run {  //cliente vai fechar because connectionzz
+                    setTitle("CONNECTION ERROR")
+                    setMessage("CLIENT WILL CLOSE")
+                    setPositiveButton("OK") { _: DialogInterface, _: Int ->
+                        finish()
+                    }
+                    setCancelable(false)
+                    create()
+                }.show()
+            }
+        }
         val edtBox = EditText(this).apply {
             maxLines = 1
             inputType = InputType.TYPE_NUMBER_FLAG_DECIMAL
@@ -298,7 +311,7 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
         }.show()
     }
 
-    fun waitForServer(){
+    fun waitForServer() {
         setContentView(R.layout.wait_for_server)
     }
 
