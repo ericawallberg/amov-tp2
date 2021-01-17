@@ -16,12 +16,14 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.common.io.Files.map
+import java.lang.Math.toDegrees
+import java.lang.Math.toRadians
 import java.lang.Thread.sleep
 import kotlin.math.tan
 import pt.isec.a2017014841.tp2.R
-import java.lang.Math.*
 import kotlin.math.pow
 
+data class ClientesInfo(val nome: String, val coordenadas: Location)
 class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private final val START_TIME_IN_MILLIS : Long = 600000
 
@@ -66,7 +68,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_new_game)
+        setContentView(R.layout.activity_game)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -119,10 +121,6 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         checkVictory()
     }
 
-  //  private fun isOutOfBounds():Boolean{
-
-    //}
-
     private fun buildShapes() {
         for(i in 0..arrayList.size-1)
             arrayCoords.add(arrayList.get(i).coordenadas)
@@ -142,15 +140,40 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 arrayDist.add(getDistance(arrayCoords[i], arrayCoords[i + 1]))
         }
 
-        /*
+
         for(i in 0..arrayCoords.size-1) {
-            arrayDist.add(arrayCoords[i].))
+            if(i==0)
+                arrayAngles.add(GetAngleOfLineBetweenTwoPoints(LatLng(arrayCoords[arrayCoords.size-1].latitude,arrayCoords[arrayCoords.size-1].longitude),LatLng(arrayCoords[i].latitude,arrayCoords[i].longitude),LatLng(arrayCoords[i+1].latitude,arrayCoords[i+1].longitude)))
+            else if(i==arrayCoords.size-1)
+                arrayAngles.add(GetAngleOfLineBetweenTwoPoints(LatLng(arrayCoords[arrayCoords.size-2].latitude,arrayCoords[arrayCoords.size-2].longitude),LatLng(arrayCoords[arrayCoords.size-1].latitude,arrayCoords[arrayCoords.size-1].longitude),LatLng(arrayCoords[0].latitude,arrayCoords[0].longitude)))
+            else
+                arrayAngles.add(GetAngleOfLineBetweenTwoPoints(LatLng(arrayCoords[i-1].latitude,arrayCoords[i-1].longitude),LatLng(arrayCoords[i].latitude,arrayCoords[i].longitude),LatLng(arrayCoords[i+1].latitude,arrayCoords[i+1].longitude)))
         }
-         */
         updateDisAngUI()
 
     }
 
+    fun GetAngleOfLineBetweenTwoPoints(p1: LatLng, p2: LatLng, p3: LatLng): Double {
+        var a2 = lengthSquare(p2, p3)
+        var b2 = lengthSquare(p1, p3)
+        var c2 = lengthSquare(p1, p2)
+
+        // length of sides be a, b, c
+
+        // length of sides be a, b, c
+        val a = Math.sqrt(a2)
+        val b = Math.sqrt(b2)
+        val c = Math.sqrt(c2)
+
+        return Math.toDegrees(Math.acos((b2 + c2 - a2) / (2 * b * c)))
+
+    }
+
+    fun lengthSquare(p1: LatLng, p2: LatLng): Double {
+        val xDiff: Double = p2.longitude - p1.longitude
+        val yDiff: Double = p2.latitude - p1.latitude
+        return xDiff * xDiff + yDiff * yDiff
+    }
 
     private fun getDistance(v1: Location, v2:Location) : Double{       //harversine formula
         val dLat = Math.toRadians(v1.latitude - v2.latitude);
@@ -163,20 +186,6 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return 100*earthRadiusKm * c;
     }
 
-    private fun getAngle(v1: Location, v2: Location): Double{
-        // val a1 = Math.toRadian(v1.latitude)
-        val a1 = toRadians(v1.latitude)
-        val a2 = toRadians(v2.latitude)
-        val a1a2 = toRadians(v2.latitude-v1.latitude)
-
-        val x = Math.cos(a1) * Math.sin(a2) - Math.sin(a1) * Math.cos(a2) * Math.cos(a1a2)
-        val y = Math.sin(a1a2) * Math.cos(a2)
-        val z = Math.atan2(y,x)
-
-        val bearing = toDegrees(z)
-
-        return bearing
-    }
 
     private fun updateDisAngUI(){
         //distances
@@ -192,14 +201,12 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
 
         //angules
-        /*
         val llangles = findViewById<LinearLayout>(R.id.llangles)
-        for(i in 0..arrayCoords.size-1)
-            if(i == arrayCoords.size - 1)
-                textView.text = "${arrayList[i].nome} : ${arrayDist[i]} "
-            else
-                textView.text = "${arrayList[i].nome} : ${arrayDist[i]} "
-        lldistances.addView(textView)*/
+        for(i in 0..arrayCoords.size-1){
+            val textView = TextView(this)
+            textView.text = "${arrayList[i].nome} : ${arrayAngles[i]} "
+            llangles.addView(textView)
+        }
 
     }
 
@@ -213,7 +220,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             addView(TextView(context).apply {
                 val paramsTV = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                 layoutParams = paramsTV
-                text = String.format("TOTAL AREA: "+ "${calculaArea()}")
+                text = "YOU LEFT THE GAME"
                 textSize = 20f
                 setTextColor(Color.rgb(96, 96, 32))
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
@@ -221,7 +228,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
 
         dlg = AlertDialog.Builder(this).run {
-            setTitle("YOU LEFT THE GAME")
+            setTitle("GAMEOVER")
             setView(ll)
             create()
         }
@@ -273,8 +280,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun calculaArea(): Double{
-        return (((arrayDist.get(0).pow(2))*arrayDist.size)/4* tan(180/arrayDist.size as Double))
-    }
+        return (((arrayDist.get(0).pow(2))*arrayDist.size)/4* tan(180.0/arrayDist.size))    }
 
     private fun getApothem() : Double{
         return (arrayDist.get(0) / (2*tan((180/arrayDist.size)*Math.PI/180)))
