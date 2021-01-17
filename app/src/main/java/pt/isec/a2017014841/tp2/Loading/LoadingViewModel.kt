@@ -58,16 +58,15 @@ class LoadingViewModel : ViewModel() {
 
     val state = MutableLiveData(State.STARTING)
     val nClients = MutableLiveData(0)
-
+    var serverThread : Thread? = null
     //cria o server
     fun startServer() {
         if (serverSocket != null ||
             serverClientConnections.isNotEmpty() ||
             connectionState.value != ConnectionState.SETTING_PARAMETERS
     ***REMOVED***
-            return
         connectionState.postValue(ConnectionState.SERVER_CONNECTING)
-        thread {
+        serverThread = thread {
             try {
                 serverSocket = ServerSocket(SERVER_PORT)
             } catch (_: Exception) {
@@ -161,7 +160,8 @@ class LoadingViewModel : ViewModel() {
             }
         }
     }
-
+    var clientError = MutableLiveData(false)
+    var clientSucess = MutableLiveData(false)
     //mensagem de erro vindo da view model
     var errorText = MutableLiveData<String>("")
 
@@ -191,6 +191,4 @@ class LoadingViewModel : ViewModel() {
         nClients.postValue(serverClientConnections.size)
         Log.i("conecao do cliente", "cleintes conectados: " + serverClientConnections.size)
     }
-
-
 }
