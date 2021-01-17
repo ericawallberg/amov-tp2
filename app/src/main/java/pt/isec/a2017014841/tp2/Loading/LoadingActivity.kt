@@ -14,8 +14,6 @@ import android.text.InputType.TYPE_CLASS_NUMBER
 import android.text.Spanned
 import android.util.Log
 import android.util.Patterns
-import android.widget.EditText
-import android.widget.Toast
 import android.widget.Toast.makeText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -31,7 +29,12 @@ import android.Manifest.permission.SEND_SMS
 import android.Manifest.permission.READ_SMS
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.location.LocationManager
+import android.view.Gravity
+import android.view.View
+import android.widget.*
 import com.google.type.DateTime
 import kotlinx.android.synthetic.main.activity_loading_server.*
 import pt.isec.a2017014841.tp2.Dados
@@ -47,6 +50,7 @@ class LoadingActivity : AppCompatActivity() {
     val SERVER_PORT = 9999
     lateinit var strIPAddress: String
     lateinit var model: LoadingViewModel
+    private var dlg: AlertDialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -148,9 +152,6 @@ class LoadingActivity : AppCompatActivity() {
             }
             startActivity(intent)
             */
-
-
-
         Dados.nomeDaEquipa =
             actualLocation.latitude.toString() + actualLocation.longitude.toString() + model.nClients.value.toString() + DateTime.getDefaultInstance()
                 .toString()
@@ -160,10 +161,7 @@ class LoadingActivity : AppCompatActivity() {
         mapusers[1.toString()]= Dados.locationToString(actualLocation)
         onCreateDados(nomeDaEquipa, mapusers)
         Toast.makeText(this, "TEAM CREATED", Toast.LENGTH_SHORT).show()
-        val intent = Intent(this, GameActivity::class.java)
-        startActivity(intent)
-
-
+       startGame()
     }
 
 
@@ -174,8 +172,8 @@ class LoadingActivity : AppCompatActivity() {
     private fun startGame() {
         //TODO: verificar as locs
 
-        //fazer o nome
-
+        val intent = Intent(this, GameActivity::class.java)
+        startActivity(intent)
 
     }
 
@@ -184,7 +182,7 @@ class LoadingActivity : AppCompatActivity() {
             maxLines = 1
             inputType = TYPE_CLASS_NUMBER
         }
-        val dlg = AlertDialog.Builder(this).run {
+        dlg = AlertDialog.Builder(this).run {
             setTitle(getString(R.string.msgsend_sms))
             setMessage(getString(R.string.phone_no))
             setPositiveButton(getString(R.string.send_sms)) { _: DialogInterface, _: Int ->
@@ -212,7 +210,7 @@ class LoadingActivity : AppCompatActivity() {
             setView(phoneNo)
             create()
         }
-        dlg.show()
+        dlg?.show()
     }
 
 
@@ -255,6 +253,7 @@ class LoadingActivity : AppCompatActivity() {
                         onErrorShow(getString(R.string.serverIpNotFound))
                         finish()
                     }
+                    waitForServer()
                 }
             }
             setNegativeButton(getString(R.string.button_cancel)) { _: DialogInterface, _: Int ->
@@ -264,6 +263,39 @@ class LoadingActivity : AppCompatActivity() {
             setView(edtBox)
             create()
         }.show()
+    }
+
+    fun waitForServer(){
+        val ll = LinearLayout(this).apply {
+            val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            this.setPadding(50, 50, 50, 50)
+            layoutParams = params
+            setBackgroundColor(Color.rgb(240, 224, 208))
+            orientation = LinearLayout.HORIZONTAL
+            addView(ProgressBar(context).apply {
+                isIndeterminate = true
+                val paramsPB = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                paramsPB.gravity = Gravity.CENTER_VERTICAL
+                layoutParams = paramsPB
+                indeterminateTintList = ColorStateList.valueOf(Color.rgb(96, 96, 32))
+            })
+            addView(TextView(context).apply {
+                val paramsTV = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                layoutParams = paramsTV
+                text = "Waiting For Server Response"
+                textSize = 20f
+                setTextColor(Color.rgb(96, 96, 32))
+                textAlignment = View.TEXT_ALIGNMENT_CENTER
+            })
+        }
+
+        dlg = AlertDialog.Builder(this).run {
+            setTitle("CLIENT MODE")
+            setView(ll)
+            create()
+        }
+
+        dlg?.show()
     }
 
     fun onErrorShow(msg: String, context: Context = this@LoadingActivity) {
