@@ -52,7 +52,39 @@ class LoadingActivity : AppCompatActivity() {
         model = ViewModelProvider(this).get(LoadingViewModel::class.java)
         model.setContext(this)
         model.errorText.observe(this) {
-
+            while (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_NETWORK_STATE
+            ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.INTERNET
+            ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_WIFI_STATE
+            ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            ***REMOVED*** != PackageManager.PERMISSION_GRANTED
+        ***REMOVED*** {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(
+                        Manifest.permission.ACCESS_WIFI_STATE,
+                        Manifest.permission.ACCESS_NETWORK_STATE,
+                        Manifest.permission.INTERNET,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                ***REMOVED***,
+                    Dados.PERMISSION_REQUEST_CODE
+            ***REMOVED***
+            }
         }
         if (model.connectionState.value != LoadingViewModel.ConnectionState.CONNECTION_ESTABLISHED) {
             when (intent.getIntExtra("mode", SERVER_MODE)) {
@@ -153,7 +185,7 @@ class LoadingActivity : AppCompatActivity() {
         Toast.makeText(this, nomeDaEquipa, Toast.LENGTH_LONG).show()
 
         val mapusers = model.getListOfUsers()
-        if(mapusers.size < 3){
+        if(mapusers.size < 2){
             onErrorShow("Clientes a menos", this)
         }
 
@@ -265,35 +297,7 @@ class LoadingActivity : AppCompatActivity() {
     }
 
     fun waitForServer(){
-        val ll = LinearLayout(this).apply {
-            val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-            this.setPadding(50, 50, 50, 50)
-            layoutParams = params
-            setBackgroundColor(Color.rgb(240, 224, 208))
-            orientation = LinearLayout.HORIZONTAL
-            addView(ProgressBar(context).apply {
-                isIndeterminate = true
-                val paramsPB = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-                paramsPB.gravity = Gravity.CENTER_VERTICAL
-                layoutParams = paramsPB
-                indeterminateTintList = ColorStateList.valueOf(Color.rgb(96, 96, 32))
-            })
-            addView(TextView(context).apply {
-                val paramsTV = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-                layoutParams = paramsTV
-                text = "Waiting For Server Response"
-                textSize = 20f
-                setTextColor(Color.rgb(96, 96, 32))
-                textAlignment = View.TEXT_ALIGNMENT_CENTER
-            })
-        }
-
-        dlg = AlertDialog.Builder(this).run {
-            setTitle("CLIENT MODE")
-            setView(ll)
-            create()
-        }
-        dlg?.show()
+        setContentView(R.layout.wait_for_server)
     }
 
     fun onErrorShow(msg: String, context: Context = this@LoadingActivity) {
