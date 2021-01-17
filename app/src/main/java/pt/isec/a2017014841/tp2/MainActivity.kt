@@ -87,12 +87,6 @@ class MainActivity : AppCompatActivity(), LocationListener {
             startActivityForResult(Intent(this, GameActivity::class.java), TEST_DB)
         }
 
-    }
-
-    var mAuth: FirebaseAuth? = null
-    override fun onStart() {
-        super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
 
         //setup permissions
         while (ActivityCompat.checkSelfPermission(
@@ -119,15 +113,22 @@ class MainActivity : AppCompatActivity(), LocationListener {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(
-                    READ_SMS,
-                    READ_PHONE_NUMBERS,
-                    READ_PHONE_STATE,
+                    ACCESS_WIFI_STATE,
+                    ACCESS_NETWORK_STATE,
+                    INTERNET,
                     ACCESS_COARSE_LOCATION,
                     ACCESS_FINE_LOCATION
             ***REMOVED***,
                 PERMISSION_REQUEST_CODE
         ***REMOVED***
         }
+
+    }
+
+    var mAuth: FirebaseAuth? = null
+    override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
 
         val currentUser = mAuth!!.currentUser
         if (currentUser == null) {
