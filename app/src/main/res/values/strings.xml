@@ -28,6 +28,7 @@
     <string name="LostConnectioWithServer">Lost connection with Server.</string>
     <string name="CantConnectToServer">Can\'t connect to server</string>
     <string name="serverIpNotFound">Server IP not found</string>
+    <string name="title_activity_game">Map</string>
 
 
 </resources>
