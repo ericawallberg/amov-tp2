@@ -266,6 +266,7 @@ class LoadingActivity : AppCompatActivity() {
 
     fun waitForServer(){
         setContentView(R.layout.activity_loading_server)
+        //i have a hhuuuuuuge diarreia
     }
 
     fun onErrorShow(msg: String, context: Context = this@LoadingActivity) {
