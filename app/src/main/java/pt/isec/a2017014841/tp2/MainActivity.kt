@@ -24,6 +24,7 @@ import pt.isec.a2017014841.tp2.Dados.RC_SIGN_IN
 import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
 import pt.isec.a2017014841.tp2.Dados.actualLocation
 import pt.isec.a2017014841.tp2.Dados.errorDialog
+import pt.isec.a2017014841.tp2.Game.GameActivity
 import pt.isec.a2017014841.tp2.Loading.LoadingActivity
 import pt.isec.a2017014841.tp2.helpers.NetUtils
 
@@ -83,7 +84,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
         }
 
         testdb.setOnClickListener {
-            startActivityForResult(Intent(this, TestDB::class.java), TEST_DB)
+            startActivityForResult(Intent(this, GameActivity::class.java), TEST_DB)
         }
 
     }
