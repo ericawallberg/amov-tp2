@@ -98,11 +98,12 @@ class LoadingViewModel : ViewModel() {
     fun getListOfUsers(): HashMap<String, String> {
         val listofusers = HashMap<String, String>()
         var userN = 2
-        serverClientConnections.forEach {
+        var copyserverclients = serverClientConnections.toMutableList()
+        while(copyserverclients.isNotEmpty()){
+            var it = copyserverclients[0]
             try {
                 val sI = it.socket.getInputStream()
                 val sO = it.socket.getOutputStream()
-
                 sO.run {
                     write((userN.toString()+"\n").toByteArray())
                     write((Dados.nomeDaEquipa+"\n").toByteArray())
@@ -113,9 +114,11 @@ class LoadingViewModel : ViewModel() {
                 }
                 //se nao ouve exceptions incrementar o user
                 listofusers[userN++.toString()] = String(valoresByteArray)
+                copyserverclients.removeAt(0)
             } catch (e: Exception) {
                 e.printStackTrace()
                 serverClientConnections.remove(it)
+                copyserverclients.removeAt(0)
             }
         }
         return listofusers

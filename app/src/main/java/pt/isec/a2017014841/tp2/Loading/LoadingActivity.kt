@@ -27,6 +27,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.location.Location
+import android.location.LocationListener
 import android.view.Gravity
 import android.view.View
 import android.widget.*
@@ -41,7 +43,7 @@ import pt.isec.a2017014841.tp2.Dados.onCreateDados
 import pt.isec.a2017014841.tp2.Game.GameActivity
 import java.util.*
 
-class LoadingActivity : AppCompatActivity() {
+class LoadingActivity : AppCompatActivity(), LocationListener {
     val SERVER_PORT = 9999
     lateinit var strIPAddress: String
     lateinit var model: LoadingViewModel
@@ -195,9 +197,9 @@ class LoadingActivity : AppCompatActivity() {
        startGame()
     }
 
-
-    fun onLocationChanged() {
-
+    override fun onLocationChanged(location: Location) {
+        actualLocation = location
+        Toast.makeText(this, Dados.locationToString(actualLocation),Toast.LENGTH_LONG).show()
     }
 
     private fun startGame() {

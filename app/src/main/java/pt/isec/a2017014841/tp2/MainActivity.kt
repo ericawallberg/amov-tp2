@@ -183,6 +183,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
 
     override fun onLocationChanged(location: Location) {
         actualLocation = location
+        Toast.makeText(this, Dados.locationToString(actualLocation),Toast.LENGTH_LONG).show()
     }
 
     fun activateLocationlistener() {
