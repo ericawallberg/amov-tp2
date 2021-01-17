@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import pt.isec.a2017014841.tp2.Dados
 import pt.isec.a2017014841.tp2.Dados.actualLocation
+import pt.isec.a2017014841.tp2.Dados.nomeDaEquipa
 import pt.isec.a2017014841.tp2.Dados.userNumber
 import pt.isec.a2017014841.tp2.R
 import java.io.InputStream
@@ -17,8 +18,8 @@ import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 
 class LoadingViewModel : ViewModel() {
-    lateinit var thisContext : Context
-    fun setContext(context:Context){
+    lateinit var thisContext: Context
+    fun setContext(context: Context) {
         thisContext = context
     }
 
@@ -67,7 +68,10 @@ class LoadingViewModel : ViewModel() {
             return
         connectionState.postValue(ConnectionState.SERVER_CONNECTING)
         thread {
-            try{serverSocket = ServerSocket(SERVER_PORT)}catch(_:Exception){}
+            try {
+                serverSocket = ServerSocket(SERVER_PORT)
+            } catch (_: Exception) {
+            }
             serverSocket?.apply {
                 try {
                     while (state.value != State.GAME_OVER) {
@@ -91,20 +95,27 @@ class LoadingViewModel : ViewModel() {
         serverSocket = null
     }
 
-    fun getListOfUsers() : HashMap<String, String>{
+    fun getListOfUsers(): HashMap<String, String> {
         val listofusers = HashMap<String, String>()
-        var userN = 2;
-        serverClientConnections.forEach{
-            val sI = it.socket.getInputStream()
-            val sO = it.socket.getOutputStream()
-            sO.run{
-                write(Dados.nomeDaEquipa.toByteArray())
+        var userN = 2
+        serverClientConnections.forEach {
+            try {
+                val sI = it.socket.getInputStream()
+                val sO = it.socket.getOutputStream()
+
+                sO.run {
+                    write(userN.toString().to)
+                    write(Dados.nomeDaEquipa.toByteArray())
+                }
+                lateinit var valoresByteArray: ByteArray
+                sI.run {
+                    valoresByteArray = this.readBytes()
+                }
+                listofusers[userN++.toString()] = String(valoresByteArray)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                serverClientConnections.remove(it)
             }
-            lateinit var valoresByteArray : ByteArray
-            sI.run {
-                valoresByteArray = this.readBytes()
-            }
-            listofusers[userN++.toString()] = String(valoresByteArray)
         }
         return listofusers
     }
@@ -142,12 +153,15 @@ class LoadingViewModel : ViewModel() {
                 connectionState.postValue(ConnectionState.CONNECTION_ESTABLISHED)
                 val bufI = socketI!!.bufferedReader()
                 while (state.value != State.GAME_OVER) {
-                    val message = bufI.readLine()
-                    val move = message.toIntOrNull() ?: MOVE_NONE
-                    if(move > 0){
-                        userNumber = move
-                        socketO!!.write(Dados.locationToString(actualLocation).toByteArray())
+                    Dados.userNumber = bufI.readLine().toInt()
+                    if (userNumber > 0) {
+                        nomeDaEquipa = bufI.readLine()
+                        if (move > 0) {
+                            userNumber = move
+                            socketO!!.write(Dados.locationToString(actualLocation).toByteArray())
+                        }
                     }
+
                 }
             } catch (_: Exception) {
                 errorText.postValue(thisContext.getString(R.string.LostConnectioWithServer))
@@ -174,7 +188,7 @@ class LoadingViewModel : ViewModel() {
                 Log.e("ClientThread", "a apagar elemento da lista")
                 var nclient = 0
                 serverClientConnections.forEach {
-                    if(it.socket == socket ){
+                    if (it.socket == socket) {
                         serverClientConnections.remove(it)
                     }
                     nclient++

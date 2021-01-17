@@ -38,7 +38,7 @@ import pt.isec.a2017014841.tp2.Dados.actualLocation
 import pt.isec.a2017014841.tp2.Dados.errorDialog
 import pt.isec.a2017014841.tp2.Dados.nomeDaEquipa
 import pt.isec.a2017014841.tp2.Dados.onCreateDados
-import pt.isec.a2017014841.tp2.Game.GameActivityFailed
+import pt.isec.a2017014841.tp2.Game.GameActivity
 import java.util.*
 
 class LoadingActivity : AppCompatActivity() {
@@ -153,6 +153,10 @@ class LoadingActivity : AppCompatActivity() {
         Toast.makeText(this, nomeDaEquipa, Toast.LENGTH_LONG).show()
 
         val mapusers = model.getListOfUsers()
+        if(mapusers.size < 3){
+            onErrorShow("Clientes a menos", this)
+        }
+
         mapusers[1.toString()]= Dados.locationToString(actualLocation)
         onCreateDados(nomeDaEquipa, mapusers)
         Toast.makeText(this, "TEAM CREATED", Toast.LENGTH_SHORT).show()
@@ -167,7 +171,7 @@ class LoadingActivity : AppCompatActivity() {
     private fun startGame() {
         //TODO: verificar as locs
 
-        val intent = Intent(this, GameActivityFailed::class.java)
+        val intent = Intent(this, GameActivity::class.java)
         startActivity(intent)
 
     }
@@ -289,7 +293,6 @@ class LoadingActivity : AppCompatActivity() {
             setView(ll)
             create()
         }
-
         dlg?.show()
     }
 

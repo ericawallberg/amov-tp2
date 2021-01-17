@@ -22,6 +22,7 @@ import java.lang.Thread.sleep
 import kotlin.math.tan
 import pt.isec.a2017014841.tp2.R
 
+data class ClientesInfo(val nome: String, val coordenadas: Location)
 class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private final val START_TIME_IN_MILLIS : Long = 600000
 
