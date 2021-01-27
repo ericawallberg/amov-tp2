@@ -3,7 +3,6 @@ package pt.isec.a2017014841.tp2
 import android.Manifest
 import android.Manifest.permission.*
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -24,6 +23,7 @@ import pt.isec.a2017014841.tp2.Dados.RC_SIGN_IN
 import pt.isec.a2017014841.tp2.Dados.SERVER_MODE
 import pt.isec.a2017014841.tp2.Dados.actualLocation
 import pt.isec.a2017014841.tp2.Dados.errorDialog
+import pt.isec.a2017014841.tp2.Game.GameActivity
 import pt.isec.a2017014841.tp2.Loading.LoadingActivity
 import pt.isec.a2017014841.tp2.helpers.NetUtils
 
@@ -64,36 +64,11 @@ class MainActivity : AppCompatActivity(), LocationListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        if (mAuth == null)
-            mAuth = FirebaseAuth.getInstance()
-        //verifica se tem rede
-        if (!NetUtils.verifyNetworkStateV2(this)) {
-            Toast.makeText(this, getString(R.string.noNetwork), Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-
-        findViewById<Button>(R.id.btnew_game).setOnClickListener {
-            startGame(SERVER_MODE)
-        }
-
-        findViewById<Button>(R.id.btjoin_game).setOnClickListener {
-            startGame(CLIENT_MODE)
-        }
-
-        testdb.setOnClickListener {
-            startActivityForResult(Intent(this, TestDB::class.java), TEST_DB)
-        }
-
-    }
-
-    var mAuth: FirebaseAuth? = null
-    override fun onStart() {
-        super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
-
         //setup permissions
+
+
+        setContentView(R.layout.activity_main)
+
         while (ActivityCompat.checkSelfPermission(
                 this,
                 ACCESS_NETWORK_STATE
@@ -118,15 +93,44 @@ class MainActivity : AppCompatActivity(), LocationListener {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(
-                    READ_SMS,
-                    READ_PHONE_NUMBERS,
-                    READ_PHONE_STATE,
+                    ACCESS_WIFI_STATE,
+                    ACCESS_NETWORK_STATE,
+                    INTERNET,
                     ACCESS_COARSE_LOCATION,
                     ACCESS_FINE_LOCATION
             ***REMOVED***,
                 PERMISSION_REQUEST_CODE
         ***REMOVED***
         }
+
+        if (mAuth == null)
+            mAuth = FirebaseAuth.getInstance()
+        //verifica se tem rede
+        if (!NetUtils.verifyNetworkStateV2(this)) {
+            Toast.makeText(this, getString(R.string.noNetwork), Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        findViewById<Button>(R.id.btnew_game).setOnClickListener {
+            startGame(SERVER_MODE)
+        }
+
+        findViewById<Button>(R.id.btjoin_game).setOnClickListener {
+            startGame(CLIENT_MODE)
+        }
+
+        testdb.setOnClickListener {
+            startActivityForResult(Intent(this, GameActivity::class.java), TEST_DB)
+        }
+
+
+    }
+
+    var mAuth: FirebaseAuth? = null
+    override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
 
         val currentUser = mAuth!!.currentUser
         if (currentUser == null) {
@@ -153,6 +157,8 @@ class MainActivity : AppCompatActivity(), LocationListener {
             Toast.makeText(baseContext, "User logged.", Toast.LENGTH_SHORT).show()
             activateLocationlistener()
         }
+
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -177,11 +183,12 @@ class MainActivity : AppCompatActivity(), LocationListener {
 
     override fun onLocationChanged(location: Location) {
         actualLocation = location
+        Toast.makeText(this, Dados.locationToString(actualLocation),Toast.LENGTH_LONG).show()
     }
 
     fun activateLocationlistener() {
         val lm = getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
-        if (ActivityCompat.checkSelfPermission(
+        while (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
         ***REMOVED*** != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -189,7 +196,6 @@ class MainActivity : AppCompatActivity(), LocationListener {
                 Manifest.permission.ACCESS_COARSE_LOCATION
         ***REMOVED*** != PackageManager.PERMISSION_GRANTED
     ***REMOVED*** {
-
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(
@@ -198,9 +204,6 @@ class MainActivity : AppCompatActivity(), LocationListener {
             ***REMOVED***,
                 PERMISSION_REQUEST_CODE
         ***REMOVED***
-
-
-            return
         }
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 5f, this)
     }
