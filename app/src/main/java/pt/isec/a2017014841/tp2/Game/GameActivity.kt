@@ -35,27 +35,26 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var lastLocation: Location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-
     //Distancias
-    val arrayList : ArrayList<ClientesInfo> = arrayListOf()
+    val arrayList = mutableListOf<ClientesInfo>()
     // val J1 = ClientesInfo("j1", Location(40.10790473531666, -8.509329157670718))
     val J1 = ClientesInfo("j1", Location("dummyprovider").apply {
-        latitude= 40.10790473531666
-        longitude= -8.509329157670718})
+        latitude= 40.20560906384776
+        longitude= -8.43353730921182})
     val J2 = ClientesInfo("j2", Location("dummyprovider").apply {
-        latitude=40.10801102798203
-        longitude = -8.509188078904495})
+        latitude=40.205311007743255
+        longitude = -8.43432185533438})
     val J3 = ClientesInfo("j3", Location("dummyprovider").apply{
-        latitude = 40.10808935954506
-        longitude = -8.509309461820276}
+        latitude = 40.2062533112325
+        longitude = -8.435031299619748}
     )
     val J4 = ClientesInfo("j4", Location("dummyprovider").apply{
-        latitude = 40.10803338207712
-        longitude = -8.509510885528076}
+        latitude = 40.206582090131235
+        longitude = -8.434249435698435}
     )
-    val arrayCoords : ArrayList<Location> = arrayListOf()
-    val arrayDist : ArrayList<Double> = arrayListOf()
-    val arrayAngles : ArrayList<Double> = arrayListOf()
+    val arrayCoords  = mutableListOf<Location>()
+    val arrayDist  = mutableListOf<Double>()
+    val arrayAngles  = mutableListOf<Double>()
 
     private var TimerState : Boolean = false
     private lateinit var timer : CountDownTimer
