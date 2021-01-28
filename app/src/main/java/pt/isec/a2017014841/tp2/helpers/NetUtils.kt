@@ -69,7 +69,7 @@ object NetUtils {
             connMgr.getNetworkCapabilities(network).apply {
                 if (this?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true ||
                     this?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) == true
-            ***REMOVED***
+                )
                     return true
             }
         }

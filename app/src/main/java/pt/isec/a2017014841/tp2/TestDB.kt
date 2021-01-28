@@ -45,7 +45,7 @@ class TestDB : AppCompatActivity() {
         val scores = hashMapOf(
                 "nossa" to 0,
                 "caralho" to 0
-    ***REMOVED***
+        )
         db.collection(JogosCollection).document("e").set(scores)
     }
 

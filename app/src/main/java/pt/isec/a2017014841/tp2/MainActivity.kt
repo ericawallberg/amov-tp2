@@ -35,29 +35,29 @@ class MainActivity : AppCompatActivity(), LocationListener {
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
-***REMOVED*** {
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (ActivityCompat.checkSelfPermission(
                 this,
                 ACCESS_NETWORK_STATE
-        ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+            ) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(
                 this,
                 INTERNET
-        ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+            ) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(
                 this,
                 ACCESS_WIFI_STATE
-        ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+            ) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(
                 this,
                 ACCESS_COARSE_LOCATION
-        ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+            ) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-        ***REMOVED*** != PackageManager.PERMISSION_GRANTED
-    ***REMOVED*** {
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             errorDialog("Ask Permissions", "Accept permissions for the app to work", this)
         }
     }
@@ -72,24 +72,24 @@ class MainActivity : AppCompatActivity(), LocationListener {
         while (ActivityCompat.checkSelfPermission(
                 this,
                 ACCESS_NETWORK_STATE
-        ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+            ) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(
                 this,
                 INTERNET
-        ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+            ) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(
                 this,
                 ACCESS_WIFI_STATE
-        ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+            ) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_COARSE_LOCATION
-        ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+            ) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-        ***REMOVED*** != PackageManager.PERMISSION_GRANTED
-    ***REMOVED*** {
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(
@@ -98,9 +98,9 @@ class MainActivity : AppCompatActivity(), LocationListener {
                     INTERNET,
                     ACCESS_COARSE_LOCATION,
                     ACCESS_FINE_LOCATION
-            ***REMOVED***,
+                ),
                 PERMISSION_REQUEST_CODE
-        ***REMOVED***
+            )
         }
 
         if (mAuth == null)
@@ -148,7 +148,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
                         Toast.makeText(
                             baseContext, "Authentication failed.",
                             Toast.LENGTH_SHORT
-                    ***REMOVED***.show()
+                        ).show()
                     }
                 }
         }
@@ -191,19 +191,19 @@ class MainActivity : AppCompatActivity(), LocationListener {
         while (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-        ***REMOVED*** != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_COARSE_LOCATION
-        ***REMOVED*** != PackageManager.PERMISSION_GRANTED
-    ***REMOVED*** {
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(
                     ACCESS_COARSE_LOCATION,
                     ACCESS_FINE_LOCATION
-            ***REMOVED***,
+                ),
                 PERMISSION_REQUEST_CODE
-        ***REMOVED***
+            )
         }
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 5f, this)
     }

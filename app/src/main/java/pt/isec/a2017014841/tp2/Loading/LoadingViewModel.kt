@@ -64,7 +64,7 @@ class LoadingViewModel : ViewModel() {
         if (serverSocket != null ||
             serverClientConnections.isNotEmpty() ||
             connectionState.value != ConnectionState.SETTING_PARAMETERS
-    ***REMOVED***
+        )
         connectionState.postValue(ConnectionState.SERVER_CONNECTING)
         serverThread = thread {
             try {

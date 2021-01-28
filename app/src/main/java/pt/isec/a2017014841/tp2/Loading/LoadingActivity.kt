@@ -51,24 +51,24 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
             while (ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.ACCESS_NETWORK_STATE
-            ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+                ) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.INTERNET
-            ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+                ) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.ACCESS_WIFI_STATE
-            ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+                ) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.ACCESS_COARSE_LOCATION
-            ***REMOVED*** != PackageManager.PERMISSION_GRANTED &&
+                ) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.ACCESS_FINE_LOCATION
-            ***REMOVED*** != PackageManager.PERMISSION_GRANTED
-        ***REMOVED*** {
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(
@@ -77,9 +77,9 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
                         Manifest.permission.INTERNET,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.ACCESS_FINE_LOCATION
-                ***REMOVED***,
+                    ),
                     Dados.PERMISSION_REQUEST_CODE
-            ***REMOVED***
+                )
             }
         }
         if (model.connectionState.value != LoadingViewModel.ConnectionState.CONNECTION_ESTABLISHED) {
@@ -109,7 +109,7 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
                     "%s %s",
                     getString(R.string.clients_connected),
                     model.nClients.value.toString()
-            ***REMOVED***
+                )
             if (model.nClients.value!! >= 2) {
                 btcreate_team.isEnabled = true
                 btcreate_team.isClickable = true
@@ -130,7 +130,7 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
             (ip shr 8) and 0xff,
             (ip shr 16) and 0xff,
             (ip shr 24) and 0xff
-    ***REMOVED***
+        )
 
         tvserver_ip.text = String.format("Server IP: %s", strIPAddress)
 
@@ -139,15 +139,15 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
                 if (ActivityCompat.checkSelfPermission(
                         this,
                         Manifest.permission.SEND_SMS
-                ***REMOVED*** == PackageManager.PERMISSION_GRANTED
-            ***REMOVED*** {
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
                     SendSMS()
                 } else {
                     ActivityCompat.requestPermissions(
                         this,
                         arrayOf(Manifest.permission.SEND_SMS, Manifest.permission.SEND_SMS),
                         1
-                ***REMOVED***
+                    )
 
                 }
             }
@@ -226,7 +226,7 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
                         this@LoadingActivity,
                         "Failed to send message",
                         Toast.LENGTH_SHORT
-                ***REMOVED***.show()
+                    ).show()
                 }
             }
             setNegativeButton(getString(R.string.button_cancel)) { _: DialogInterface, _: Int ->
@@ -272,7 +272,7 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
                     dest: Spanned?,
                     dstart: Int,
                     dend: Int
-            ***REMOVED***: CharSequence? {
+                ): CharSequence? {
                     if (source?.none { it.isDigit() || it == '.' } == true)
                         return ""
                     return null
@@ -290,7 +290,7 @@ class LoadingActivity : AppCompatActivity(), LocationListener {
                         this@LoadingActivity,
                         getString(R.string.error_address),
                         Toast.LENGTH_LONG
-                ***REMOVED***.show()
+                    ).show()
                     finish()
                 } else {
                     try {
